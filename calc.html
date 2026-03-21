@@ -10,6 +10,16 @@
   .container { max-width: 800px; margin: 0 auto; background-color: rgba(0, 0, 0, 0.5); padding: 30px 20px; border-radius: 12px; border: 2px solid #d4af37; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
   h2 { color: #d4af37; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); letter-spacing: 2px; }
 
+  /* タイマーコントロールパネル */
+  .timer-control { background: rgba(0, 0, 0, 0.4); border: 1px solid #7f8c8d; border-radius: 8px; padding: 15px; margin-bottom: 25px; }
+  .timer-control-title { color: #ecf0f1; font-size: 14px; margin-bottom: 10px; font-weight: bold; }
+  .timer-display-small { font-family: 'Courier New', monospace; font-size: 28px; font-weight: bold; color: #e74c3c; margin-bottom: 10px; }
+  .timer-btns { display: flex; justify-content: center; gap: 10px; }
+  .t-btn { padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: #fff; font-size: 14px; }
+  .btn-start { background-color: #27ae60; }
+  .btn-stop { background-color: #e67e22; }
+  .btn-reset { background-color: #7f8c8d; }
+
   .table-wrapper { width: 100%; margin-bottom: 20px; }
   
   table { margin: 0 auto; border-collapse: collapse; width: 100%; min-width: 600px; background-color: #ffffff; color: #000; border-radius: 8px; overflow: hidden; }
@@ -21,7 +31,6 @@
   input[type="text"].name-input { text-align: left; }
   .readonly { background-color: #e9ecef; border: none; font-weight: bold; outline: none; color: #2c3e50; }
   
-  /* 削除ボタン */
   .del-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background 0.3s; white-space: nowrap; }
   .del-btn:hover { background-color: #c0392b; }
 
@@ -40,7 +49,6 @@
   .back-btn:hover { background: rgba(255,255,255,0.1); }
   .draft-notice { font-size: 12px; color: #bdc3c7; margin-top: 10px; }
 
-  /* 📱 スマホ画面のトランプ風デザイン */
   @media screen and (max-width: 600px) {
     body { padding: 10px; }
     .container { padding: 20px 10px; border-width: 1px; }
@@ -52,17 +60,253 @@
     tr { display: block; background-color: #ffffff; margin-bottom: 25px; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); border: 1px solid #ccc; position: relative; }
     
     td { display: flex; justify-content: space-between; align-items: center; border: none; padding: 10px 0; border-bottom: 1px solid #eee; }
-    
-    /* 5番目(Pay)の要素をカードのフッター風に */
     td:nth-child(5) { border-bottom: none; background-color: #f8f9fa; margin: -15px; margin-top: 10px; padding: 15px; border-radius: 0 0 12px 12px; }
-    
-    /* 6番目(削除ボタン)の要素をカードの右上に絶対配置 */
     td:last-child { position: absolute; top: -10px; right: -5px; border: none; padding: 0; background: transparent; display: block; z-index: 10; }
-    td:last-child::before { display: none; } /* ラベルを消す */
+    td:last-child::before { display: none; }
     .del-btn { padding: 6px 10px; font-size: 12px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
     td::before { content: attr(data-label); font-weight: bold; color: #34495e; font-size: 13px; }
     
     input { width: 55%; font-size: 16px; padding: 10px; border-radius: 6px; }
     input[type="text"].name-input { text-align: right; }
-    .save-btn
+    .save-btn { width: 100%; font-size: 16px; padding: 15px 10px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>💰 チップ精算</h2>
+
+    <div class="timer-control">
+      <div class="timer-control-title">⏱️ ブラインドタイマー (トップページ連動)</div>
+      <div id="controlTimer" class="timer-display-small">15:00</div>
+      <div class="timer-btns">
+        <button class="t-btn btn-start" onclick="timerAction('start')">▶ START</button>
+        <button class="t-btn btn-stop" onclick="timerAction('stop')">⏸ STOP</button>
+        <button class="t-btn btn-reset" onclick="timerAction('reset')">🔄 15分リセット</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="calcTable">
+        <thead>
+          <tr>
+            <th>プレイヤー名</th>
+            <th>エントリー</th>
+            <th>最終持ち点</th>
+            <th>精算後 (点)</th>
+            <th>Pay (円)</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn" onclick="addRow()">+ プレイヤーを追加</button>
+
+    <div class="summary" id="checkResult">
+      合計Pay: <span id="totalPay">0</span> <br>
+      <span id="statusMessage" class="match">OK</span>
+    </div>
+    
+    <div class="draft-notice">※入力内容はブラウザに自動保存されています</div>
+
+    <button class="btn save-btn" id="saveBtn" onclick="saveData()">💾 成績を記録する</button>
+
+    <button class="btn back-btn" onclick="location.href='index.html'">◀ トップに戻る</button>
+  </div>
+
+<script>
+  // -------------------------
+  // タイマー処理
+  // -------------------------
+  const DEFAULT_TIME = 15 * 60; // 15分
+  let localTimerInterval;
+
+  function updateTimerDisplay() {
+    const state = JSON.parse(localStorage.getItem('pokerTimerState')) || { running: false, timeLeft: DEFAULT_TIME, lastUpdate: Date.now() };
+    let currentLeft = state.timeLeft;
+    
+    if (state.running) {
+      const elapsed = Math.floor((Date.now() - state.lastUpdate) / 1000);
+      currentLeft = Math.max(0, state.timeLeft - elapsed);
+    }
+    
+    const m = Math.floor(currentLeft / 60);
+    const s = currentLeft % 60;
+    document.getElementById('controlTimer').innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function timerAction(action) {
+    let state = JSON.parse(localStorage.getItem('pokerTimerState')) || { running: false, timeLeft: DEFAULT_TIME, lastUpdate: Date.now() };
+    
+    if (action === 'start' && !state.running && state.timeLeft > 0) {
+      state.running = true;
+      state.lastUpdate = Date.now();
+    } else if (action === 'stop' && state.running) {
+      state.running = false;
+      const elapsed = Math.floor((Date.now() - state.lastUpdate) / 1000);
+      state.timeLeft = Math.max(0, state.timeLeft - elapsed);
+    } else if (action === 'reset') {
+      state.running = false;
+      state.timeLeft = DEFAULT_TIME;
+    }
+    
+    localStorage.setItem('pokerTimerState', JSON.stringify(state));
+    updateTimerDisplay();
+  }
+
+  // 画面を開いた時に1秒ごとに表示を更新
+  localTimerInterval = setInterval(updateTimerDisplay, 1000);
+
+
+  // -------------------------
+  // 精算処理（これまでと同じ）
+  // -------------------------
+  const STARTING_CHIPS = 20000;
+  const RATE = 10;
+  const INITIAL_ROWS = 5;
+
+  function formatK(num) {
+    if (num === 0) return "0";
+    if (Math.abs(num) >= 1000) return (num / 1000).toString() + "K";
+    return num.toString();
+  }
+
+  function createRow() {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-label="👤 名前"><input type="text" class="name-input" placeholder="名前" oninput="calculate()"></td>
+      <td data-label="🎟️ エントリー"><input type="number" class="entry" value="1" min="0" oninput="calculate()"></td>
+      <td data-label="🪙 最終持ち点"><input type="number" class="final-chips" value="0" step="100" oninput="calculate()"></td>
+      <td data-label="📊 精算後 (点)"><input type="text" class="result readonly" value="-20K" readonly tabindex="-1"></td>
+      <td data-label="💴 Pay (円)"><input type="text" class="pay readonly" value="-2K" readonly tabindex="-1"></td>
+      <td data-label="🗑️ 操作"><button class="del-btn" onclick="removeRow(this)">✖ 削除</button></td>
+    `;
+    return tr;
+  }
+
+  function addRow() {
+    document.getElementById('tableBody').appendChild(createRow());
+    calculate();
+  }
+
+  function removeRow(btn) {
+    btn.closest('tr').remove();
+    calculate(); 
+  }
+
+  function calculate() {
+    const rows = document.querySelectorAll('#tableBody tr');
+    let totalPaySum = 0;
+    let draftData = []; 
+
+    rows.forEach(row => {
+      const name = row.querySelector('.name-input').value.trim();
+      const entry = parseFloat(row.querySelector('.entry').value) || 0;
+      const finalChips = parseFloat(row.querySelector('.final-chips').value) || 0;
+      
+      const result = finalChips - (entry * STARTING_CHIPS);
+      const pay = result / RATE;
+
+      row.querySelector('.result').value = formatK(result);
+      row.querySelector('.pay').value = formatK(pay);
+
+      totalPaySum += pay;
+      draftData.push({ name: row.querySelector('.name-input').value, entry, finalChips });
+    });
+
+    document.getElementById('totalPay').innerText = formatK(totalPaySum);
+    const msg = document.getElementById('statusMessage');
+    
+    if (totalPaySum === 0) {
+      msg.innerText = "✨ ピッタリ合っています！ ✨";
+      msg.className = "match";
+    } else {
+      msg.innerText = `⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatK(totalPaySum)} ズレています`;
+      msg.className = "error";
+    }
+
+    localStorage.setItem('pokerDraft', JSON.stringify(draftData));
+  }
+
+  function loadDraft() {
+    const draft = localStorage.getItem('pokerDraft');
+    const tableBody = document.getElementById('tableBody');
+    
+    if (draft) {
+      const draftData = JSON.parse(draft);
+      draftData.forEach(data => {
+        const tr = createRow();
+        tr.querySelector('.name-input').value = data.name;
+        tr.querySelector('.entry').value = data.entry;
+        tr.querySelector('.final-chips').value = data.finalChips;
+        tableBody.appendChild(tr);
+      });
+      calculate(); 
+    } else {
+      for (let i = 0; i < INITIAL_ROWS; i++) tableBody.appendChild(createRow());
+      calculate();
+    }
+  }
+
+  function saveData() {
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxijPOgmKGDL-UL5eAqOBKrxKVfPl4v6hsdLcWbiuwMrCWSPI5fqxu3qOmXIFTrMYCi5A/exec";
+    const rows = document.querySelectorAll('#tableBody tr');
+    let playerData = [];
+    let hasName = false;
+
+    rows.forEach(row => {
+      const name = row.querySelector('.name-input').value.trim();
+      if (name !== "") {
+        hasName = true;
+        const entry = parseFloat(row.querySelector('.entry').value) || 0;
+        const finalChips = parseFloat(row.querySelector('.final-chips').value) || 0;
+        const result = finalChips - (entry * STARTING_CHIPS);
+        const pay = result / RATE;
+
+        playerData.push({ name, entry, finalChips, result, pay });
+      }
+    });
+
+    if (!hasName) { alert("プレイヤー名を入力してください！"); return; }
+
+    let checkTotal = 0;
+    playerData.forEach(p => checkTotal += p.pay);
+    if (checkTotal !== 0) {
+      if (!confirm("合計Payが0ではありません！\n本当にこのまま保存してもよろしいですか？")) return;
+    }
+
+    const btn = document.getElementById('saveBtn');
+    btn.innerText = "⏳ 通信中...";
+    btn.disabled = true;
+
+    fetch(GAS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(playerData)
+    }).then(() => {
+      alert("✨ 成績を記録しました！");
+      btn.innerText = "💾 成績を記録する";
+      btn.disabled = false;
+      if(confirm("画面をリセットして次のゲームの準備をしますか？")) {
+        localStorage.removeItem('pokerDraft');
+        location.reload();
+      }
+    }).catch(error => {
+      alert("通信エラーが発生しました。");
+      btn.innerText = "💾 成績を記録する";
+      btn.disabled = false;
+    });
+  }
+
+  window.onload = () => {
+    loadDraft();
+    updateTimerDisplay(); // 開いた時にタイマーも初期表示
+  };
+</script>
+</body>
+</html>
