@@ -10,6 +10,16 @@
   .container { max-width: 800px; margin: 0 auto; background-color: rgba(0, 0, 0, 0.5); padding: 30px 20px; border-radius: 12px; border: 2px solid #d4af37; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
   h2 { color: #d4af37; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); letter-spacing: 2px; }
   
+  /* リアルタイムLiveボードのデザイン */
+  .live-board { background: rgba(0,0,0,0.4); border: 1px solid #d4af37; border-radius: 8px; padding: 15px; margin-bottom: 25px; text-align: left; }
+  .live-board-title { color: #d4af37; font-size: 16px; margin-bottom: 15px; text-align: center; font-weight: bold; letter-spacing: 1px; }
+  .live-board-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .player-chip { background: linear-gradient(145deg, #1a252f, #2c3e50); border: 1px solid #d4af37; padding: 8px 15px; border-radius: 6px; font-size: 16px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+  .player-chip .name { font-weight: bold; color: #fff; }
+  .player-chip .score.plus { color: #2ecc71; font-weight: bold; }
+  .player-chip .score.minus { color: #e74c3c; font-weight: bold; }
+  .empty-msg { color: #7f8c8d; font-size: 14px; text-align: center; width: 100%; }
+
   .table-wrapper { width: 100%; margin-bottom: 20px; }
   
   table { margin: 0 auto; border-collapse: collapse; width: 100%; min-width: 550px; background-color: #ffffff; color: #000; border-radius: 8px; overflow: hidden; }
@@ -63,6 +73,13 @@
   <div class="container">
     <h2>💰 チップ精算</h2>
 
+    <div class="live-board">
+      <div class="live-board-title">♠️ 本日の参加者 (Live) ♥️</div>
+      <div id="liveBoardContent" class="live-board-grid">
+        <div class="empty-msg">プレイヤー名を入力するとここに速報が出ます</div>
+      </div>
+    </div>
+
     <div class="table-wrapper">
       <table id="calcTable">
         <thead>
@@ -82,7 +99,7 @@
     <button class="btn" onclick="addRow()">+ プレイヤーを追加</button>
 
     <div class="summary" id="checkResult">
-      合計Pay: <span id="totalPay">0</span> 円 <br>
+      合計Pay: <span id="totalPay">0</span> <br>
       <span id="statusMessage" class="match">OK</span>
     </div>
     
@@ -98,14 +115,23 @@
   const RATE = 10;
   const INITIAL_ROWS = 5;
 
+  // 数字を「K（キロ）」表記に省略する関数 (例: 20000 -> 20K, 1500 -> 1.5K)
+  function formatK(num) {
+    if (num === 0) return "0";
+    if (Math.abs(num) >= 1000) {
+      return (num / 1000).toString() + "K";
+    }
+    return num.toString();
+  }
+
   function createRow() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td data-label="👤 名前"><input type="text" class="name-input" placeholder="名前" oninput="calculate()"></td>
       <td data-label="🎟️ エントリー"><input type="number" class="entry" value="1" min="0" oninput="calculate()"></td>
       <td data-label="🪙 最終持ち点"><input type="number" class="final-chips" value="0" step="100" oninput="calculate()"></td>
-      <td data-label="📊 精算後 (点)"><input type="text" class="result readonly" value="-20000" readonly tabindex="-1"></td>
-      <td data-label="💴 Pay (円)"><input type="text" class="pay readonly" value="-2000" readonly tabindex="-1"></td>
+      <td data-label="📊 精算後 (点)"><input type="text" class="result readonly" value="-20K" readonly tabindex="-1"></td>
+      <td data-label="💴 Pay (円)"><input type="text" class="pay readonly" value="-2K" readonly tabindex="-1"></td>
     `;
     return tr;
   }
@@ -119,31 +145,48 @@
     const rows = document.querySelectorAll('#tableBody tr');
     let totalPaySum = 0;
     let draftData = []; 
+    let liveBoardHTML = "";
+    let activePlayers = 0;
 
     rows.forEach(row => {
-      const name = row.querySelector('.name-input').value;
+      const name = row.querySelector('.name-input').value.trim();
       const entry = parseFloat(row.querySelector('.entry').value) || 0;
       const finalChips = parseFloat(row.querySelector('.final-chips').value) || 0;
       
       const result = finalChips - (entry * STARTING_CHIPS);
       const pay = result / RATE;
 
-      row.querySelector('.result').value = result;
-      row.querySelector('.pay').value = pay;
+      // 画面上はK表記にする
+      row.querySelector('.result').value = formatK(result);
+      row.querySelector('.pay').value = formatK(pay);
 
       totalPaySum += pay;
+      draftData.push({ name: row.querySelector('.name-input').value, entry, finalChips });
 
-      draftData.push({ name, entry, finalChips });
+      // 名前が入力されていればLiveボードに追加
+      if (name !== "") {
+        activePlayers++;
+        let payClass = pay > 0 ? "plus" : (pay < 0 ? "minus" : "");
+        let payText = pay > 0 ? "+" + formatK(pay) : formatK(pay);
+        liveBoardHTML += `<div class="player-chip"><span class="name">${name}</span><span class="score ${payClass}">${payText}</span></div>`;
+      }
     });
 
-    document.getElementById('totalPay').innerText = totalPaySum;
+    // Liveボードの更新
+    if (activePlayers === 0) {
+      liveBoardHTML = '<div class="empty-msg">プレイヤー名を入力するとここに速報が出ます</div>';
+    }
+    document.getElementById('liveBoardContent').innerHTML = liveBoardHTML;
+
+    // 合計表示の更新
+    document.getElementById('totalPay').innerText = formatK(totalPaySum);
     const msg = document.getElementById('statusMessage');
     
     if (totalPaySum === 0) {
       msg.innerText = "✨ ピッタリ合っています！ ✨";
       msg.className = "match";
     } else {
-      msg.innerText = `⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${totalPaySum} 円ズレています`;
+      msg.innerText = `⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatK(totalPaySum)} ズレています`;
       msg.className = "error";
     }
 
@@ -181,12 +224,19 @@
       const name = row.querySelector('.name-input').value.trim();
       if (name !== "") {
         hasName = true;
+        
+        // 保存する時は「K」表記の文字ではなく、純粋な数字を再計算して送る
+        const entry = parseFloat(row.querySelector('.entry').value) || 0;
+        const finalChips = parseFloat(row.querySelector('.final-chips').value) || 0;
+        const result = finalChips - (entry * STARTING_CHIPS);
+        const pay = result / RATE;
+
         playerData.push({
           name: name,
-          entry: parseFloat(row.querySelector('.entry').value) || 0,
-          finalChips: parseFloat(row.querySelector('.final-chips').value) || 0,
-          result: parseFloat(row.querySelector('.result').value) || 0,
-          pay: parseFloat(row.querySelector('.pay').value) || 0
+          entry: entry,
+          finalChips: finalChips,
+          result: result,
+          pay: pay
         });
       }
     });
@@ -196,9 +246,11 @@
       return;
     }
 
-    const totalPay = parseFloat(document.getElementById('totalPay').innerText);
-    if (totalPay !== 0) {
-      if (!confirm("合計Payが0円ではありません！\n本当にこのまま保存してもよろしいですか？")) return;
+    // エラーチェック（表示されているKを数値に戻して判定する代わり、内部で再計算）
+    let checkTotal = 0;
+    playerData.forEach(p => checkTotal += p.pay);
+    if (checkTotal !== 0) {
+      if (!confirm("合計Payが0ではありません！\n本当にこのまま保存してもよろしいですか？")) return;
     }
 
     const btn = document.getElementById('saveBtn');
