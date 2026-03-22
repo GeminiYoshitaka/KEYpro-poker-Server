@@ -6,7 +6,7 @@
 <title>ポーカー管理 - KEYpro poker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nosifer&family=Work+Sans:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nosifer&family=Work+Sans:wght@900&display=swap" rel="stylesheet">
 <style>
   /* 全体の設定 */
   *, *::before, *::after { box-sizing: border-box; }
@@ -48,7 +48,7 @@
   .board-title { color: #d4af37; font-size: 20px; letter-spacing: 4px; font-weight: bold; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.4); padding-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4); margin-bottom: 10px; flex-shrink: 0; }
   .board-title::before { content: ''; display: inline-block; width: 6px; height: 20px; background-color: #d4af37; box-shadow: 0 0 10px #d4af37; }
   
-  /* 🔴 リエントリーランキング（恐怖デザイン） */
+  /* 🔴 リエントリーランキング */
   .live-ranking-list { display: flex; flex-direction: column; gap: 8px; width: 100%; flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-bottom: 10px; position: relative; }
   .live-ranking-list::-webkit-scrollbar { width: 4px; }
   .live-ranking-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
@@ -118,11 +118,14 @@
   .modal-close-btn { background: transparent; color: #7f8fa6; border: 1px solid #555; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-size: 12px; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; margin-right: -2px; }
   .modal-close-btn:hover { background: #ffffff; color: #000; border-color: #ffffff; }
 
-  /* ★★★ NEW CHALLENGER 演出のスタイル ★★★ */
+
+  /* ==========================================================================
+     ★★★ 新装！ ド派手な NEW CHALLENGER 演出 ★★★
+     ========================================================================== */
   .new-challenger-overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.9); /* より暗くして文字を際立たせる */
     z-index: 10000;
     display: flex;
     flex-direction: column;
@@ -132,31 +135,40 @@
     overflow: hidden;
   }
   @keyframes flashBg {
-    0% { background: rgba(212, 175, 55, 0.6); }
-    100% { background: rgba(0, 0, 0, 0.85); }
+    0% { background: rgba(255, 255, 255, 0.8); }
+    100% { background: rgba(0, 0, 0, 0.9); }
   }
+  
+  /* ★ タイトル：アメコミ風のド派手な「Bangers」フォント */
   .new-challenger-title {
     color: #ff4757;
-    font-family: 'Nosifer', sans-serif;
-    font-size: 50px;
-    text-shadow: 0 0 20px rgba(255, 71, 87, 0.8);
-    letter-spacing: 5px;
-    margin-bottom: 20px;
+    font-family: 'Bangers', cursive;
+    font-size: 100px; /* サイズアップ */
+    text-shadow: 4px 4px 0 #000, -2px -2px 0 #fff, 0 0 30px #ff4757; /* 縁取りと強発光 */
+    letter-spacing: 8px;
+    margin-bottom: 10px;
     animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     z-index: 10001;
   }
+  
+  /* ★ 名前：圧倒的な読みやすさ（白文字＋極太黒フチ＋黄金の後光） */
   .new-challenger-name {
-    color: #d4af37;
-    font-size: 70px;
+    color: #ffffff;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 80px;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 10px;
-    text-shadow: 0 0 30px #d4af37, 0 0 10px #fff;
+    letter-spacing: 5px;
+    -webkit-text-stroke: 4px #000; /* 極太の黒フチで背景から分離 */
+    text-shadow: 0 0 50px #d4af37, 0 10px 20px rgba(0,0,0,0.9); /* 黄金の後光 */
     animation: slideUpFade 0.5s ease-out 0.2s forwards;
     opacity: 0;
     transform: translateY(50px);
     z-index: 10001;
+    text-align: center;
+    padding: 0 20px;
   }
+
   @keyframes scaleIn {
     0% { transform: scale(3); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
@@ -166,31 +178,34 @@
     100% { transform: translateY(0); opacity: 1; }
   }
   
-  .falling-chip {
+  /* ★ 10種類のランダム演出用パーティクル共通設定 */
+  .particle {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.6);
-    border: 4px dashed rgba(255,255,255,0.7);
-    animation: fall linear forwards;
+    pointer-events: none;
     z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
   }
-  .falling-chip[data-color="red"] { background: radial-gradient(circle, #e74c3c, #c0392b); }
-  .falling-chip[data-color="black"] { background: radial-gradient(circle, #2c3e50, #000000); }
-  .falling-chip[data-color="gold"] { background: radial-gradient(circle, #f1c40f, #d35400); color: #000; border-color: rgba(0,0,0,0.5); }
-  .falling-chip[data-color="green"] { background: radial-gradient(circle, #2ecc71, #27ae60); }
-  .falling-chip[data-color="blue"] { background: radial-gradient(circle, #3498db, #2980b9); }
 
+  /* アニメーションパターン */
   @keyframes fall {
-    0% { transform: translateY(-100px) rotate(0deg) scale(0.8); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg) scale(1.2); opacity: 0; }
+    0% { top: -10vh; transform: rotate(0deg) scale(1); opacity: 1; }
+    100% { top: 110vh; transform: rotate(720deg) scale(1.2); opacity: 0; }
+  }
+  @keyframes explode {
+    0% { left: 50vw; top: 50vh; transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { left: var(--tx); top: var(--ty); transform: translate(-50%, -50%) scale(var(--s)); opacity: 0; }
+  }
+  @keyframes rise {
+    0% { top: 110vh; transform: translateX(0) scale(1); opacity: 1; }
+    100% { top: -10vh; transform: translateX(var(--tx)) scale(0.5); opacity: 0; }
+  }
+  @keyframes zoom {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; left: 50vw; top: 50vh; }
+    20% { opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(var(--s)); opacity: 0; left: var(--tx); top: var(--ty); }
   }
 
   /* 📱 スマホ用の設定 */
@@ -235,10 +250,9 @@
     
     .footer-text { position: static; text-align: center; margin-top: 20px; padding-bottom: 20px; }
     
-    /* スマホ版の演出サイズ */
-    .new-challenger-title { font-size: 28px; }
-    .new-challenger-name { font-size: 40px; letter-spacing: 4px; text-align: center; padding: 0 10px; }
-    .falling-chip { width: 40px; height: 40px; font-size: 16px; border-width: 3px; }
+    /* スマホ版の演出サイズ調整 */
+    .new-challenger-title { font-size: 40px; text-shadow: 2px 2px 0 #000, -1px -1px 0 #fff, 0 0 10px #ff4757; }
+    .new-challenger-name { font-size: 45px; -webkit-text-stroke: 2px #000; }
   }
 </style>
 </head>
@@ -312,21 +326,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ★ 表示許可が出ているメンバーのリスト
     let displayedNames = [];
-    // ★ 1分間待機中のメンバーのリスト
     let pendingNames = [];
-    // ★ 初回読み込みかの判定フラグ
     let isFirstLoad = true;
     let latestData = []; 
 
+    // ==========================================================================
+    // ★★★ 10種類のランダムジャックポット演出 ★★★
+    // ==========================================================================
     function triggerNewChallenger(playerName) {
       const container = document.createElement('div');
       container.className = 'new-challenger-overlay';
       
       const title = document.createElement('div');
       title.className = 'new-challenger-title';
-      title.innerText = 'NEW CHALLENGER';
+      title.innerText = 'NEW CHALLENGER!';
       
       const nameDiv = document.createElement('div');
       nameDiv.className = 'new-challenger-name';
@@ -336,32 +350,124 @@
       container.appendChild(nameDiv);
       document.body.appendChild(container);
 
-      const colors = ['red', 'black', 'gold', 'green', 'blue'];
+      // 演出パターンの定義（10種類）
+      const effectPatterns = [
+        { type: 'chip', anim: 'fall' },       // ① チップの雨
+        { type: 'card', anim: 'fall' },       // ② トランプ吹雪
+        { type: 'gold', anim: 'fall' },       // ③ ゴールドラッシュ（金貨と札束）
+        { type: 'laser', anim: 'fall' },      // ④ レーザービーム
+        { type: 'confetti', anim: 'fall' },   // ⑤ 紙吹雪
+        { type: 'firework', anim: 'rise' },   // ⑥ スパーク花火
+        { type: 'slot', anim: 'fall' },       // ⑦ スロットフィーバー
+        { type: 'hand', anim: 'zoom' },       // ⑧ ポーカーハンド
+        { type: 'ring', anim: 'explode' },    // ⑨ ネオンサークル
+        { type: 'star', anim: 'explode' }     // ⑩ スターバースト
+      ];
+      
+      // ランダムに1つ選ぶ
+      const effect = effectPatterns[Math.floor(Math.random() * effectPatterns.length)];
+      
+      const count = window.innerWidth < 600 ? 30 : 70; // 画面サイズに合わせた量
+      const colors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6', '#ffffff'];
       const suits = ['♠', '♥', '♣', '♦'];
-      const chipCount = window.innerWidth < 600 ? 30 : 60; 
+      const slots = ['7', 'BAR', '🍒', '🔔', '💎'];
+      const ranks = ['A', 'K', 'Q', 'J', '10'];
 
-      for (let i = 0; i < chipCount; i++) {
-        const chip = document.createElement('div');
-        chip.className = 'falling-chip';
-        chip.setAttribute('data-color', colors[Math.floor(Math.random() * colors.length)]);
-        chip.innerText = suits[Math.floor(Math.random() * suits.length)];
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
         
-        chip.style.left = (Math.random() * 100) + 'vw';
-        const duration = Math.random() * 2 + 2; 
-        chip.style.animationDuration = duration + 's';
-        chip.style.animationDelay = (Math.random() * 0.5) + 's';
+        let dur = Math.random() * 2 + 1.5;
+        let delay = Math.random() * 0.5;
         
-        container.appendChild(chip);
+        // 基本位置
+        p.style.left = (Math.random() * 100) + 'vw';
+        
+        // カスタムプロパティ (放射状や飛散用)
+        p.style.setProperty('--tx', (Math.random() * 100) + 'vw');
+        p.style.setProperty('--ty', (Math.random() * 100) + 'vh');
+        p.style.setProperty('--s', Math.random() * 2 + 1);
+
+        // 選択された演出に合わせてスタイルを生成
+        if (effect.type === 'chip') {
+          p.style.width = '50px'; p.style.height = '50px';
+          p.style.borderRadius = '50%';
+          p.style.border = '4px dashed rgba(255,255,255,0.7)';
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+          p.innerText = suits[Math.floor(Math.random() * suits.length)];
+          p.style.color = '#fff'; p.style.fontSize = '20px';
+          p.style.boxShadow = '0 5px 10px rgba(0,0,0,0.5)';
+        } else if (effect.type === 'card') {
+          p.style.width = '40px'; p.style.height = '60px';
+          p.style.background = '#fff'; p.style.borderRadius = '4px';
+          let suit = suits[Math.floor(Math.random() * suits.length)];
+          p.innerText = suit;
+          p.style.color = (suit === '♥' || suit === '♦') ? '#e74c3c' : '#2c3e50';
+          p.style.fontSize = '24px'; p.style.border = '1px solid #ccc';
+        } else if (effect.type === 'gold') {
+          if (Math.random() > 0.5) { // 金貨
+            p.style.width = '40px'; p.style.height = '40px'; p.style.borderRadius = '50%';
+            p.style.background = 'radial-gradient(circle, #f1c40f, #d35400)';
+            p.innerText = '¥'; p.style.color = '#fff'; p.style.fontSize = '20px';
+          } else { // 札束
+            p.style.width = '50px'; p.style.height = '25px'; p.style.background = '#27ae60';
+            p.style.borderRadius = '2px';
+            p.innerText = '$'; p.style.color = '#fff';
+          }
+        } else if (effect.type === 'confetti') {
+          p.style.width = '15px'; p.style.height = '15px';
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+          dur = Math.random() * 3 + 2; // ゆっくり降る
+        } else if (effect.type === 'slot') {
+          p.innerText = slots[Math.floor(Math.random() * slots.length)];
+          p.style.fontSize = '45px';
+        } else if (effect.type === 'star') {
+          p.innerText = '★';
+          p.style.color = colors[Math.floor(Math.random() * colors.length)];
+          p.style.fontSize = (Math.random() * 30 + 20) + 'px';
+          p.style.textShadow = '0 0 10px #fff';
+        } else if (effect.type === 'firework') {
+          p.style.width = '10px'; p.style.height = '10px'; p.style.borderRadius = '50%';
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+          p.style.boxShadow = '0 0 20px ' + p.style.background;
+          p.style.setProperty('--tx', ((Math.random() - 0.5) * 50) + 'vw');
+        } else if (effect.type === 'laser') {
+          p.style.width = '4px'; p.style.height = '150px';
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+          p.style.boxShadow = '0 0 20px ' + p.style.background;
+          dur = Math.random() * 0.5 + 0.3; // 爆速で降る
+        } else if (effect.type === 'ring') {
+          p.style.width = '50px'; p.style.height = '50px';
+          p.style.borderRadius = '50%';
+          p.style.border = '5px solid ' + colors[Math.floor(Math.random() * colors.length)];
+          p.style.boxShadow = '0 0 15px ' + p.style.borderColor;
+          p.style.setProperty('--s', Math.random() * 4 + 2);
+        } else if (effect.type === 'hand') {
+          let suit = suits[Math.floor(Math.random() * suits.length)];
+          let rank = ranks[Math.floor(Math.random() * ranks.length)];
+          p.innerText = rank + suit;
+          p.style.fontSize = '30px';
+          p.style.color = (suit === '♥' || suit === '♦') ? '#e74c3c' : '#2c3e50';
+          p.style.background = '#fff'; p.style.padding = '5px 10px';
+          p.style.borderRadius = '5px'; p.style.border = '2px solid #d4af37';
+          p.style.left = '50vw'; p.style.top = '50vh';
+          p.style.setProperty('--s', Math.random() * 3 + 1.5);
+        }
+
+        // アニメーションを適用
+        p.style.animation = `${effect.anim} ${dur}s linear ${delay}s forwards`;
+        container.appendChild(p);
       }
 
+      // 4秒後にフェードアウトして消す
       setTimeout(() => {
         container.style.opacity = '0';
         container.style.transition = 'opacity 0.5s ease';
         setTimeout(() => container.remove(), 500);
-      }, 3500);
+      }, 4000);
     }
+    // ==========================================================================
 
-    // ★ 画面の描画処理（displayedNames に入っている人のみ表示）
     function renderBoard(data) {
       const playersBoard = document.getElementById('activePlayersBoard');
       const rankingBoard = document.getElementById('topLiveBoard');
@@ -369,7 +475,6 @@
       let activePlayers = [];
       let reEntryPlayers = [];
 
-      // 表示許可されたメンバーだけを抽出して描画
       data.forEach(player => {
         if (player.name && player.name.trim() !== "" && displayedNames.includes(player.name) && player.entry > 0) { 
           activePlayers.push({ name: player.name });
@@ -433,7 +538,6 @@
       }
     }
 
-    // ★ ここにタイマーの心臓部（setInterval）をしっかり追加！ ★
     let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
     onValue(ref(db, 'pokerSession/timer'), (snapshot) => {
       const data = snapshot.val();
@@ -456,7 +560,7 @@
     onValue(ref(db, 'pokerSession/players'), (snapshot) => {
       latestData = snapshot.val() || [];
       
-      // ① 初回ロード時：全員をラグなしで一斉に表示
+      // ① 初回ロード時
       if (isFirstLoad) {
         latestData.forEach(p => {
           if (p.name && p.name.trim() !== "") {
@@ -468,35 +572,28 @@
         return;
       }
 
-      // ② 2回目以降の更新：新メンバーか既存メンバーかを判定
+      // ② 新メンバー追加判定と1分間のラグ設定
       latestData.forEach(p => {
         let name = p.name ? p.name.trim() : "";
         if (name !== "" && p.entry > 0) {
-          // 表示リストにも待機リストにもいない＝「完全な新規メンバー」
           if (!displayedNames.includes(name) && !pendingNames.includes(name)) {
-            // 待機リストに入れる
             pendingNames.push(name);
             
-            // ★ 60000ミリ秒（1分間）のラグを設定！
             setTimeout(() => {
-              // 待機リストから外す
               pendingNames = pendingNames.filter(n => n !== name);
-              
-              // 1分後にまだデータが存在していれば、表示リストに加えて演出を発動
               const stillExists = latestData.some(player => player.name === name);
               if (stillExists) {
                 if (!displayedNames.includes(name)) {
                   displayedNames.push(name);
                 }
-                triggerNewChallenger(name); // ド派手な演出！
-                renderBoard(latestData);    // トップページに反映！
+                triggerNewChallenger(name); // 10種のランダム演出が発動！
+                renderBoard(latestData);
               }
-            }, 60000); // ←ここが60秒の指定です
+            }, 60000); 
           }
         }
       });
 
-      // 既存メンバーの更新（リエントリー回数など）は即座に反映
       renderBoard(latestData);
     });
 
