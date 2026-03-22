@@ -73,20 +73,22 @@
   .live-rank-card.worst-2 { border-left-color: #bf9b30; background: linear-gradient(90deg, rgba(191, 155, 48, 0.08) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(191, 155, 48, 0.2); }
   .live-rank-card.worst-3 { border-left-color: #a67c00; background: linear-gradient(90deg, rgba(166, 124, 0, 0.05) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(166, 124, 0, 0.1); }
 
-  .rank-col { width: 60px; display: flex; align-items: center; justify-content: flex-start; z-index: 1; }
-  .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: 36px; font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #57606f; letter-spacing: 2px; line-height: 1; }
+  /* ★ 修正ポイント: flex-shrink: 0; を追加して文字が潰れるのを防ぐ！幅も余裕を持たせる */
+  .rank-col { width: 75px; display: flex; align-items: center; justify-content: flex-start; z-index: 1; flex-shrink: 0; }
   
-  /* ★ 1位の「01」をドカンと大きく、文字間も広くして圧倒的な存在感に */
-  .worst-1 .rank-badge-text { font-size: 46px; letter-spacing: 6px; -webkit-text-stroke-color: #b30000; filter: drop-shadow(0 0 10px rgba(179, 0, 0, 0.7)); }
+  /* フォントサイズと文字間を均等に美しく揃える */
+  .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: 34px; font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #57606f; letter-spacing: 2px; line-height: 1; }
+  
+  .worst-1 .rank-badge-text { font-size: 36px; -webkit-text-stroke-color: #b30000; filter: drop-shadow(0 0 10px rgba(179, 0, 0, 0.7)); }
   .worst-1 .card-skull-bg { fill: rgba(179, 0, 0, 0.06); }
   .worst-2 .rank-badge-text { -webkit-text-stroke-color: #bf9b30; filter: drop-shadow(0 0 8px rgba(191, 155, 48, 0.5)); }
   .worst-3 .rank-badge-text { -webkit-text-stroke-color: #a67c00; filter: drop-shadow(0 0 6px rgba(166, 124, 0, 0.4)); }
 
-  .name-col { flex-grow: 1; text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 4px; justify-content: center; z-index: 1; }
+  .name-col { flex-grow: 1; text-align: left; padding-left: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; z-index: 1; }
   .player-name-item { font-size: 18px; font-weight: bold; color: #f1f2f6; letter-spacing: 2px; text-transform: uppercase; }
   .worst-1 .player-name-item { font-size: 20px; color: #b30000; text-shadow: 0 0 8px rgba(179, 0, 0, 0.5); }
 
-  .entry-col { display: flex; align-items: center; justify-content: flex-end; width: 120px; z-index: 1; }
+  .entry-col { display: flex; align-items: center; justify-content: flex-end; width: 120px; z-index: 1; flex-shrink: 0; }
   .entry-badge { display: flex; align-items: baseline; gap: 4px; }
   .entry-badge .num { font-family: 'Nosifer', sans-serif; font-size: 32px; font-weight: normal; line-height: 1; color: #7f8fa6; }
   .entry-badge .unit { font-size: 14px; color: #7f8fa6; font-weight: normal; letter-spacing: 1px; }
@@ -158,7 +160,6 @@
     z-index: 10001;
   }
   
-  /* ★ 名前を「Impact」の斜体に変更し、極太フチ＋ソリッドなドロップシャドウで乱入感を強化 */
   .new-challenger-name {
     color: #ffffff;
     font-family: Impact, 'Arial Black', sans-serif;
@@ -182,7 +183,6 @@
     100% { transform: scale(1); opacity: 1; }
   }
   
-  /* ★ 斜め下から画面に突き刺さるようなアグレッシブなアニメーション */
   @keyframes smashIn {
     0% { transform: translateY(100px) skewX(-15deg) scale(0.5); opacity: 0; filter: brightness(2); }
     70% { transform: translateY(-10px) skewX(-15deg) scale(1.1); opacity: 1; filter: brightness(1.5); }
@@ -243,16 +243,16 @@
     .live-rank-card { padding: 10px 15px; border-radius: 0 4px 4px 0; border-left-width: 3px; }
     .live-rank-card .card-skull-bg { width: 90px; height: 90px; }
     
-    /* スマホ版でも1位をしっかり目立たせる */
-    .rank-col { width: 45px; }
-    .rank-badge-text { font-size: 28px; }
-    .worst-1 .rank-badge-text { font-size: 34px; letter-spacing: 4px; }
+    /* スマホ版でも潰れないように幅を確保 */
+    .rank-col { width: 55px; flex-shrink: 0; }
+    .rank-badge-text { font-size: 26px; }
+    .worst-1 .rank-badge-text { font-size: 30px; letter-spacing: 2px; }
     
     .name-col { padding-left: 10px; gap: 2px; }
     .player-name-item { font-size: 15px; }
     .worst-1 .player-name-item { font-size: 16px; }
     
-    .entry-col { width: 80px; }
+    .entry-col { width: 80px; flex-shrink: 0; }
     .entry-badge .num { font-size: 24px; }
     .entry-badge .unit { font-size: 10px; }
     
@@ -361,7 +361,6 @@
       container.appendChild(nameDiv);
       document.body.appendChild(container);
 
-      // 演出パターンの定義（10種類）
       const effectPatterns = [
         { type: 'chip', anim: 'fall' },       // ① チップの雨
         { type: 'card', anim: 'fall' },       // ② トランプ吹雪
