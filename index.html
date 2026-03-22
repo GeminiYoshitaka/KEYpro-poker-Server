@@ -118,7 +118,7 @@
   .modal-close-btn { background: transparent; color: #7f8fa6; border: 1px solid #555; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-size: 12px; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; margin-right: -2px; }
   .modal-close-btn:hover { background: #ffffff; color: #000; border-color: #ffffff; }
 
-  /* ★★★ NEW CHALLENGER（新規参加）演出のスタイル ★★★ */
+  /* ★★★ NEW CHALLENGER 演出のスタイル ★★★ */
   .new-challenger-overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -166,7 +166,6 @@
     100% { transform: translateY(0); opacity: 1; }
   }
   
-  /* 降り注ぐチップ */
   .falling-chip {
     position: absolute;
     width: 60px;
@@ -236,7 +235,6 @@
     
     .footer-text { position: static; text-align: center; margin-top: 20px; padding-bottom: 20px; }
     
-    /* スマホ版の演出サイズ */
     .new-challenger-title { font-size: 28px; }
     .new-challenger-name { font-size: 40px; letter-spacing: 4px; text-align: center; padding: 0 10px; }
     .falling-chip { width: 40px; height: 40px; font-size: 16px; border-width: 3px; }
@@ -313,21 +311,22 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ★ プレイヤーリストの差分を記録して新規追加を検知する変数
-    let previousPlayersList = null;
+    // ★ 表示許可が出ているメンバーのリスト
+    let displayedNames = [];
+    // ★ 1分間待機中のメンバーのリスト
+    let pendingNames = [];
+    // ★ 初回読み込みかの判定フラグ
+    let isFirstLoad = true;
+    let latestData = []; 
 
-    // ★ NEW CHALLENGER とチップを降らせるド派手な演出関数
     function triggerNewChallenger(playerName) {
-      // 演出用のコンテナを作成
       const container = document.createElement('div');
       container.className = 'new-challenger-overlay';
       
-      // NEW CHALLENGER テキスト
       const title = document.createElement('div');
       title.className = 'new-challenger-title';
       title.innerText = 'NEW CHALLENGER';
       
-      // プレイヤー名 JOINED テキスト
       const nameDiv = document.createElement('div');
       nameDiv.className = 'new-challenger-name';
       nameDiv.innerText = playerName + ' JOINED!';
@@ -336,10 +335,9 @@
       container.appendChild(nameDiv);
       document.body.appendChild(container);
 
-      // チップを降らせる
       const colors = ['red', 'black', 'gold', 'green', 'blue'];
       const suits = ['♠', '♥', '♣', '♦'];
-      const chipCount = window.innerWidth < 600 ? 30 : 60; // 画面サイズに合わせて量を変える
+      const chipCount = window.innerWidth < 600 ? 30 : 60; 
 
       for (let i = 0; i < chipCount; i++) {
         const chip = document.createElement('div');
@@ -355,7 +353,6 @@
         container.appendChild(chip);
       }
 
-      // 3.5秒後にフェードアウトして消す
       setTimeout(() => {
         container.style.opacity = '0';
         container.style.transition = 'opacity 0.5s ease';
@@ -363,56 +360,24 @@
       }, 3500);
     }
 
-    let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
-
-    onValue(ref(db, 'pokerSession/timer'), (snapshot) => {
-      const data = snapshot.val();
-      if (data) currentTimerState = data;
-    });
-
-    setInterval(() => {
-      let currentElapsed = currentTimerState.elapsedSeconds;
-      if (currentTimerState.running) {
-        const elapsedSinceUpdate = Math.floor((Date.now() - currentTimerState.lastUpdate) / 1000);
-        currentElapsed += elapsedSinceUpdate;
-      }
-      const h = Math.floor(currentElapsed / 3600);
-      const m = Math.floor((currentElapsed % 3600) / 60);
-      const s = currentElapsed % 60;
-      document.getElementById('mainTimer').innerText = 
-        (h > 0 ? String(h).padStart(2, '0') + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-    }, 1000);
-
-    onValue(ref(db, 'pokerSession/players'), (snapshot) => {
-      const draftData = snapshot.val() || [];
+    // ★ 画面の描画処理（displayedNames に入っている人のみ表示）
+    function renderBoard(data) {
       const playersBoard = document.getElementById('activePlayersBoard');
       const rankingBoard = document.getElementById('topLiveBoard');
       
       let activePlayers = [];
       let reEntryPlayers = [];
-      let currentNamesList = []; // 現在のプレイヤー名のリスト
-      
-      draftData.forEach(player => {
-        if (player.name && player.name.trim() !== "" && player.entry > 0) { 
+
+      // 表示許可されたメンバーだけを抽出して描画
+      data.forEach(player => {
+        if (player.name && player.name.trim() !== "" && displayedNames.includes(player.name) && player.entry > 0) { 
           activePlayers.push({ name: player.name });
-          currentNamesList.push(player.name);
           if (player.entry > 1) {
             reEntryPlayers.push({ name: player.name, reEntry: player.entry - 1 });
           }
         }
       });
 
-      // ★ 差分から「新しく追加された人」を特定して演出を発動！
-      if (previousPlayersList !== null) {
-        // 現在のリストの中で、前回のリストに含まれていない人を探す
-        let newPlayers = currentNamesList.filter(name => !previousPlayersList.includes(name));
-        if (newPlayers.length > 0) {
-          triggerNewChallenger(newPlayers[0]); // 新規プレイヤーの名前で演出！
-        }
-      }
-      previousPlayersList = [...currentNamesList]; // 現在のリストを次回用に保存
-
-      // 🔴 リエントリーランキングの描画
       if (reEntryPlayers.length === 0) {
         rankingBoard.innerHTML = '<div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>';
       } else {
@@ -432,7 +397,6 @@
         groupArray.forEach((group, index) => {
           let rankStr = String(index + 1).padStart(2, '0');
           let rankClass = "worst-other";
-          
           if (index === 0) { rankClass = "worst-1"; }
           else if (index === 1) { rankClass = "worst-2"; }
           else if (index === 2) { rankClass = "worst-3"; }
@@ -443,23 +407,15 @@
           html += `
             <div class="live-rank-card ${rankClass}">
               <svg class="card-skull-bg" viewBox="0 0 448 512"><path d="M439.2 236.1l-20.1-11.9c-6.4-3.8-14.6-1.6-18.4 5.1-18.9 34.6-56.3 58.7-99.1 58.7-42.8 0-80.1-24.1-99.1-58.7-3.8-6.7-12-8.9-18.4-5.1l-20.1 11.9c-6.7 4-8.9 12.6-5 19.3C181.8 290.4 200.7 320 224 320s42.2-29.6 66.8-64.7c3.9-6.7 1.7-15.3-5-19.3zm-111.2-120c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zm64 0c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zM224 0C100.3 0 0 100.3 0 224v192c0 53 43 96 96 96h256c53 0 96-43 96-96V224C448 100.3 347.7 0 224 0zm96 416c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm-128 0c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm160-224C352 110.3 294.5 48 224 48s-128 62.3-128 144v14.1c0 23.6 15.1 44.8 36.9 52.8l10.8 4c16.3 6 30.1 16.6 39.4 30.2 11.2-16.1 27.6-29 46.9-36l10.8-4c21.8-8 36.9-29.2 36.9-52.8V192zm-32 96c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg>
-              
-              <div class="rank-col">
-                <div class="rank-badge-text">${rankStr}</div>
-              </div>
-              <div class="name-col">
-                ${namesHtml}
-              </div>
-              <div class="entry-col">
-                <div class="entry-badge">${entryText}</div>
-              </div>
+              <div class="rank-col"><div class="rank-badge-text">${rankStr}</div></div>
+              <div class="name-col">${namesHtml}</div>
+              <div class="entry-col"><div class="entry-badge">${entryText}</div></div>
             </div>
           `;
         });
         rankingBoard.innerHTML = html;
       }
 
-      // 🟢 参加者リストの描画
       if (activePlayers.length === 0) {
         playersBoard.innerHTML = '<div class="empty-text">現在プレイ中の参加者はいません</div>';
       } else {
@@ -474,12 +430,64 @@
         });
         playersBoard.innerHTML = playersHtml;
       }
+    }
+
+    let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
+    onValue(ref(db, 'pokerSession/timer'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) currentTimerState = data;
+    });
+
+    onValue(ref(db, 'pokerSession/players'), (snapshot) => {
+      latestData = snapshot.val() || [];
+      
+      // ① 初回ロード時：全員をラグなしで一斉に表示
+      if (isFirstLoad) {
+        latestData.forEach(p => {
+          if (p.name && p.name.trim() !== "") {
+            displayedNames.push(p.name);
+          }
+        });
+        isFirstLoad = false;
+        renderBoard(latestData);
+        return;
+      }
+
+      // ② 2回目以降の更新：新メンバーか既存メンバーかを判定
+      latestData.forEach(p => {
+        let name = p.name ? p.name.trim() : "";
+        if (name !== "" && p.entry > 0) {
+          // 表示リストにも待機リストにもいない＝「完全な新規メンバー」
+          if (!displayedNames.includes(name) && !pendingNames.includes(name)) {
+            // 待機リストに入れる
+            pendingNames.push(name);
+            
+            // ★ 60000ミリ秒（1分間）のラグを設定！
+            setTimeout(() => {
+              // 待機リストから外す
+              pendingNames = pendingNames.filter(n => n !== name);
+              
+              // 1分後にまだデータが存在していれば、表示リストに加えて演出を発動
+              const stillExists = latestData.some(player => player.name === name);
+              if (stillExists) {
+                if (!displayedNames.includes(name)) {
+                  displayedNames.push(name);
+                }
+                triggerNewChallenger(name); // ド派手な演出！
+                renderBoard(latestData);    // トップページに反映！
+              }
+            }, 60000); // ←ここが60秒の指定です
+          }
+        }
+      });
+
+      // 既存メンバーの更新（リエントリー回数など）は即座に反映
+      renderBoard(latestData);
     });
 
     const now = new Date();
     document.getElementById('todayDate').innerText = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, '0') + "/" + String(now.getDate()).padStart(2, '0');
 
-    // ★ ダイヤルボタン押下時に、同期的に input.focus() を実行して即座にキーボードを立ち上げる！
     window.showPasswordModal = function() {
       const modal = document.getElementById('passModal');
       const input = document.getElementById('adminPass');
