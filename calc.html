@@ -8,10 +8,10 @@
 <style>
   /* 全体の設定（横揺れを完全にロック） */
   *, *::before, *::after { box-sizing: border-box; }
-  html, body { max-width: 100vw; overflow-x: hidden; }
+  html, body { max-width: 100vw; overflow-x: hidden; scroll-behavior: smooth; }
 
   body, input, button, table, th, td, h2, div { font-family: 'KEYpro', sans-serif; }
-  body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; padding: 15px; margin: 0; min-height: 100vh; }
+  body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; padding: 15px; margin: 0; min-height: 100vh; transition: padding-bottom 0.3s; }
   
   .container { width: 100%; max-width: 900px; margin: 0 auto; background-color: rgba(0, 0, 0, 0.7); padding: 25px 20px; border-radius: 16px; border: 2px solid #d4af37; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
   
@@ -76,20 +76,25 @@
   .numpad-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #333;
   }
+  
   .numpad-btn {
     background: #000; color: #fff; border: none; font-size: 26px; padding: 22px 0;
     font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; outline: none;
     transition: background 0.1s;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .numpad-btn:active { background: #333; }
   .numpad-btn.action { background: #1a252f; color: #e74c3c; font-size: 24px; }
+  
   .numpad-btn.done { 
     background: linear-gradient(145deg, #bf953f, #b38728); 
     color: #fff; font-family: 'KEYpro', sans-serif; font-size: 20px; letter-spacing: 2px; 
+    grid-row: span 2; 
   }
   .numpad-btn.done:active { filter: brightness(0.8); }
 
-  /* 入力中（アクティブ）の入力欄のエフェクト */
   input.numpad-trigger { cursor: pointer; caret-color: transparent; font-size: 20px; font-weight: bold; }
   input.numpad-active {
     background-color: rgba(212, 175, 55, 0.15) !important;
@@ -98,7 +103,22 @@
     color: #d4af37 !important;
   }
 
-  /* 📱 スマホ向け（絶対にはみ出さない縦型アプリレイアウト） */
+  /* ★★★ 生成画像の長押し保存用ポップアップ ★★★ */
+  .save-image-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85); z-index: 10000;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    backdrop-filter: blur(5px); padding: 20px;
+  }
+  .save-image-overlay.show { display: flex; }
+  .save-image-overlay img {
+    max-width: 100%; max-height: 80vh; border: 3px solid #d4af37;
+    box-shadow: 0 10px 30px rgba(0,0,0,1); margin-bottom: 20px;
+  }
+  .save-image-text { color: #f1c40f; font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 20px; letter-spacing: 1px; line-height: 1.5; }
+  .save-image-close { background: #fff; color: #000; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+
+  /* 📱 スマホ向けアプリレイアウト */
   @media screen and (max-width: 600px) {
     body { padding: 10px 5px; }
     .container { padding: 20px 15px; border-radius: 12px; }
@@ -134,21 +154,52 @@
     .numpad-btn { padding: 18px 0; font-size: 24px; }
   }
 
-  /* ★★★ 画像生成用エリア ★★★ */
-  #reportArea { position: absolute; top: -9999px; left: -9999px; width: 1200px; height: 675px; background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; border: 10px solid #d4af37; }
+  /* ★★★ 画像生成用エリア（非表示・JSで動的にスマホ用/PC用を切り替え） ★★★ */
+  #reportArea {
+    position: absolute; top: -9999px; left: -9999px; 
+    background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); 
+    color: #ffffff; padding: 40px; box-sizing: border-box; 
+    display: flex; flex-direction: column; border: 10px solid #d4af37;
+  }
+  
+  /* PC用レイアウト（横長） */
+  #reportArea.layout-pc { width: 1200px; height: 675px; }
+  /* ★ スマホ用レイアウト（縦長・文字特大） */
+  #reportArea.layout-mobile { width: 750px; height: 1334px; padding: 50px 30px; }
+
   .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d4af37; padding-bottom: 20px; margin-bottom: 20px; }
+  .layout-mobile .report-header { flex-direction: column; gap: 20px; border-bottom-width: 5px; padding-bottom: 30px; margin-bottom: 30px; }
+
   .report-title { font-size: 48px; color: #d4af37; font-weight: bold; letter-spacing: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+  .layout-mobile .report-title { font-size: 64px; letter-spacing: 3px; }
+
   .report-suits { font-size: 32px; letter-spacing: 10px; }
+  .layout-mobile .report-suits { font-size: 48px; letter-spacing: 15px; }
+
   .report-red { color: #e74c3c; }
+  
   .report-meta { font-size: 20px; color: #bdc3c7; text-align: right; line-height: 1.6; }
+  .layout-mobile .report-meta { text-align: center; font-size: 28px; width: 100%; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; }
+
   .report-table { width: 100%; border-collapse: collapse; flex-grow: 1; margin-bottom: 20px; }
+  .layout-mobile .report-table { flex-grow: 0; margin-bottom: 40px; }
+
   .report-table th, .report-table td { border: 1px solid rgba(255,255,255,0.1); padding: 10px; text-align: center; font-size: 18px; }
+  .layout-mobile .report-table th, .layout-mobile .report-table td { font-size: 26px; padding: 15px 8px; border-width: 2px; }
+
   .report-table th { background-color: #1a252f; color: #d4af37; font-weight: bold; }
   .report-table td.name-cell { text-align: left; font-weight: bold; }
+  
   .report-table td.pay-cell { font-weight: bold; font-size: 22px; }
+  .layout-mobile .report-table td.pay-cell { font-size: 32px; }
+
   .report-plus { color: #2ecc71; }
   .report-minus { color: #e74c3c; }
+  
   .report-footer { display: flex; justify-content: space-between; align-items: center; font-size: 18px; color: #7f8c8d; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
+  .layout-mobile .report-footer { flex-direction: column-reverse; gap: 30px; border-top-width: 2px; padding-top: 30px; margin-top: auto; }
+
+  .layout-mobile .report-total-pay-box { font-size: 36px; color: #fff; font-weight: bold; background: rgba(0,0,0,0.5); padding: 20px 40px; border-radius: 50px; border: 3px solid #d4af37; }
 </style>
 </head>
 <body>
@@ -192,10 +243,12 @@
 
     <div class="btn-group">
       <button class="btn add-btn" onclick="window.addRow()">+ プレイヤー行を追加</button>
-      <button class="btn save-btn" id="saveBtn" onclick="window.confirmAndSave()">💾 成績を確定・記録する</button>
+      <button class="btn save-btn" id="saveBtn" onclick="window.confirmAndSave()">💾 成績を確定して画像を保存</button>
       <button class="btn back-btn" onclick="location.href='index.html'">◀ トップページへ戻る</button>
     </div>
   </div>
+
+  <div class="footer-text">© 2026 KEYpro poker Server</div>
 
   <div id="numpadOverlay" class="numpad-overlay" onclick="window.closeCustomNumpad()"></div>
   <div id="customNumpad" class="custom-numpad">
@@ -213,12 +266,18 @@
       <button class="numpad-btn" onclick="window.numpadType('7')">7</button>
       <button class="numpad-btn" onclick="window.numpadType('8')">8</button>
       <button class="numpad-btn" onclick="window.numpadType('9')">9</button>
-      <button class="numpad-btn" onclick="window.numpadType('00')">00</button>
+      <button class="numpad-btn done" onclick="window.closeCustomNumpad()">完 了</button>
 
       <button class="numpad-btn" onclick="window.numpadType('0')">0</button>
+      <button class="numpad-btn" onclick="window.numpadType('00')">00</button>
       <button class="numpad-btn" onclick="window.numpadType('000')">000</button>
-      <button class="numpad-btn done" style="grid-column: span 2;" onclick="window.closeCustomNumpad()">完 了</button>
     </div>
+  </div>
+
+  <div id="saveImageOverlay" class="save-image-overlay">
+    <div class="save-image-text">✨ レポート画像が生成されました！<br>下の画像を【長押し】して<br>【"写真"に保存】を選んでください。</div>
+    <img id="generatedImage" src="" alt="Session Report">
+    <button class="save-image-close" onclick="window.closeSaveImageOverlay()">閉じる</button>
   </div>
 
   <div id="reportArea">
@@ -237,7 +296,7 @@
       <tbody id="reportTableBody"></tbody>
     </table>
     <div class="report-footer">
-      <div>Total Pay: <span id="reportTotalPay">0</span> (Confirmed)</div>
+      <div class="report-total-pay-box">Total Pay: <span id="reportTotalPay">0</span> (Confirmed)</div>
       <div style="display:flex; align-items:center; gap:10px;">
         <div class="report-suits" style="font-size:16px;"><span>♠</span><span class="report-red">♥</span><span>♣</span><span class="report-red">♦</span></div>
         <div>KEYpro poker Server</div>
@@ -262,9 +321,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // -------------------------
-    // タイマー処理
-    // -------------------------
     let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
     onValue(ref(db, 'pokerSession/timer'), (snapshot) => {
       const data = snapshot.val();
@@ -298,62 +354,40 @@
       update(ref(db, 'pokerSession/timer'), newState);
     };
 
-    // -------------------------
-    // カスタム電卓（テンキー）処理
-    // -------------------------
     let activeNumpadInput = null;
     let activeNumpadOriginal = "";
 
     window.openCustomNumpad = function(el) {
       if (activeNumpadInput) { window.closeCustomNumpad(); }
-      
       activeNumpadInput = el;
-      activeNumpadOriginal = el.value; // 元の数字を保存
-      el.value = ""; // ★ タップしたら既存の数字は消える
-      
+      activeNumpadOriginal = el.value; 
+      el.value = ""; 
       el.classList.add('numpad-active');
       document.getElementById('numpadOverlay').classList.add('show');
       document.getElementById('customNumpad').classList.add('show');
-      window.calculate(); // 空に書き換えた状態で計算
+      
+      document.body.style.paddingBottom = "350px"; 
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+      window.calculate(); 
     };
 
     window.closeCustomNumpad = function() {
       if (!activeNumpadInput) return;
-      
-      // ★ 記載がない場合（空っぽの場合）は既存の数字を復活
-      if (activeNumpadInput.value === "") {
-        activeNumpadInput.value = activeNumpadOriginal; 
-      }
-      
+      if (activeNumpadInput.value === "") { activeNumpadInput.value = activeNumpadOriginal; }
       activeNumpadInput.classList.remove('numpad-active');
       activeNumpadInput = null;
       document.getElementById('numpadOverlay').classList.remove('show');
       document.getElementById('customNumpad').classList.remove('show');
+      document.body.style.paddingBottom = "15px";
       window.calculate();
     };
 
-    window.numpadType = function(val) {
-      if (!activeNumpadInput) return;
-      activeNumpadInput.value += val;
-      window.calculate();
-    };
+    window.numpadType = function(val) { if (activeNumpadInput) { activeNumpadInput.value += val; window.calculate(); } };
+    window.numpadDel = function() { if (activeNumpadInput) { activeNumpadInput.value = activeNumpadInput.value.slice(0, -1); window.calculate(); } };
+    window.numpadClear = function() { if (activeNumpadInput) { activeNumpadInput.value = ""; window.calculate(); } };
 
-    window.numpadDel = function() {
-      if (!activeNumpadInput) return;
-      activeNumpadInput.value = activeNumpadInput.value.slice(0, -1);
-      window.calculate();
-    };
-
-    window.numpadClear = function() {
-      if (!activeNumpadInput) return;
-      activeNumpadInput.value = "";
-      window.calculate();
-    };
-
-
-    // -------------------------
-    // 精算・同期処理
-    // -------------------------
     const STARTING_CHIPS = 20000;
     const RATE = 10;
     const INITIAL_ROWS = 5;
@@ -368,87 +402,62 @@
       if (!draftData && isFirstLoad) {
         tableBody.innerHTML = '';
         for (let i = 0; i < INITIAL_ROWS; i++) { tableBody.appendChild(window.createRow()); }
-        isFirstLoad = false;
-        window.calculate(); 
-        return;
+        isFirstLoad = false; window.calculate(); return;
       }
       isFirstLoad = false;
       const data = draftData || [];
-
       while(tableBody.children.length < data.length) { tableBody.appendChild(window.createRow()); }
       while(tableBody.children.length > data.length) { tableBody.lastChild.remove(); }
 
       let totalPaySum = 0;
-
       data.forEach((p, index) => {
          const row = tableBody.children[index];
          const nameInput = row.querySelector('.name-input');
          const entryInput = row.querySelector('.entry');
          const chipsInput = row.querySelector('.final-chips');
-         
-         // 自分が入力中のセル以外を更新（名前は通常のOSキーボード、他はカスタムキーパッド）
-         if (document.activeElement !== nameInput) {
-             nameInput.value = p.name || "";
-         }
-         // ★ カスタム電卓で入力中のセルは上書きしない
-         if (entryInput !== activeNumpadInput) {
-             entryInput.value = p.entry !== undefined ? p.entry : 1;
-         }
-         if (chipsInput !== activeNumpadInput) {
-             chipsInput.value = p.finalChips !== undefined ? p.finalChips : 0;
-         }
-
+         if (document.activeElement !== nameInput) { nameInput.value = p.name || ""; }
+         if (entryInput !== activeNumpadInput) { entryInput.value = p.entry !== undefined ? p.entry : 1; }
+         if (chipsInput !== activeNumpadInput) { chipsInput.value = p.finalChips !== undefined ? p.finalChips : 0; }
          const entry = parseFloat(entryInput.value) || 0;
          const finalChips = parseFloat(chipsInput.value) || 0;
          const result = finalChips - (entry * STARTING_CHIPS);
          const pay = result / RATE;
-
          row.querySelector('.result').value = formatNumber(result);
          row.querySelector('.pay').value = formatNumber(pay);
          totalPaySum += pay;
       });
-
       document.getElementById('totalPay').innerText = formatNumber(totalPaySum);
-      const msg = document.getElementById('statusMessage');
-      if (totalPaySum === 0) {
-        msg.innerText = "✨ 確認済 (誤差なし)"; msg.className = "summary match";
-      } else {
-        msg.innerText = `⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatNumber(totalPaySum)} のズレ`; msg.className = "summary error";
-      }
+      const msg = document.getElementById('checkResult');
+      const status = document.getElementById('statusMessage');
+      if (totalPaySum === 0) { status.innerHTML = '<span class="status-badge">✨ 確認済 (誤差なし)</span>'; msg.className = "summary match"; }
+      else { status.innerHTML = `<span class="status-badge">⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatNumber(totalPaySum)} のズレ</span>`; msg.className = "summary error"; }
     });
 
     window.calculate = function() {
       const rows = document.querySelectorAll('#tableBody tr');
       let totalPaySum = 0;
       let draftData = []; 
-
       rows.forEach(row => {
         const name = row.querySelector('.name-input').value; 
         const entry = parseFloat(row.querySelector('.entry').value) || 0;
         const finalChips = parseFloat(row.querySelector('.final-chips').value) || 0;
-        
         const result = finalChips - (entry * STARTING_CHIPS);
         const pay = result / RATE;
-
         row.querySelector('.result').value = formatNumber(result);
         row.querySelector('.pay').value = formatNumber(pay);
         totalPaySum += pay;
         draftData.push({ name, entry, finalChips });
       });
-
       document.getElementById('totalPay').innerText = formatNumber(totalPaySum);
-      const msg = document.getElementById('statusMessage');
-      if (totalPaySum === 0) {
-        msg.innerText = "✨ 確認済 (誤差なし)"; msg.className = "summary match";
-      } else {
-        msg.innerText = `⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatNumber(totalPaySum)} のズレ`; msg.className = "summary error";
-      }
+      const msg = document.getElementById('checkResult');
+      const status = document.getElementById('statusMessage');
+      if (totalPaySum === 0) { status.innerHTML = '<span class="status-badge">✨ 確認済 (誤差なし)</span>'; msg.className = "summary match"; }
+      else { status.innerHTML = `<span class="status-badge">⚠️ エラー: ${totalPaySum > 0 ? '+' : ''}${formatNumber(totalPaySum)} のズレ</span>`; msg.className = "summary error"; }
       set(ref(db, 'pokerSession/players'), draftData);
     };
 
     window.createRow = function(name = "", entry = 1, finalChips = 0) {
       const tr = document.createElement('tr');
-      // ★ エントリーと最終持ち点は readonly にし、クリックでカスタム電卓を開く
       tr.innerHTML = `
         <td data-label="名前"><input type="text" class="name-input" placeholder="プレイヤー名" value="${name}" oninput="window.calculate()"></td>
         <td data-label="エントリー"><input type="text" class="entry numpad-trigger" value="${entry}" readonly onclick="window.openCustomNumpad(this)"></td>
@@ -460,14 +469,12 @@
       return tr;
     };
 
-    window.addRow = function() {
-      document.getElementById('tableBody').appendChild(window.createRow());
-      window.calculate();
-    };
+    window.addRow = function() { document.getElementById('tableBody').appendChild(window.createRow()); window.calculate(); };
+    window.removeRow = function(btn) { btn.closest('tr').remove(); window.calculate(); };
 
-    window.removeRow = function(btn) {
-      btn.closest('tr').remove();
-      window.calculate(); 
+    // ★ ポップアップを閉じる関数
+    window.closeSaveImageOverlay = function() {
+      document.getElementById('saveImageOverlay').classList.remove('show');
     };
 
     window.confirmAndSave = function() {
@@ -495,25 +502,37 @@
       if (checkTotal !== 0) {
         if (!confirm("合計Payにズレがあります。このまま記録しますか？")) return;
       } else {
-        if (!confirm("本日の成績を確定し、画像を生成して記録しますか？")) return;
+        if (!confirm("本日の成績を確定し、長押し保存用の画像を生成しますか？")) return;
       }
 
       const btn = document.getElementById('saveBtn');
-      btn.innerText = "⏳ 処理中..."; btn.disabled = true;
+      btn.innerText = "⏳ 画像生成中..."; btn.disabled = true;
+
+      const reportArea = document.getElementById('reportArea');
+      
+      // ★ デバイスを判別してレイアウトを切り替え ★
+      const isMobile = window.innerWidth <= 600;
+      if (isMobile) {
+        reportArea.className = 'layout-mobile'; // スマホ用（縦長・文字特大）
+      } else {
+        reportArea.className = 'layout-pc'; // PC用（横長）
+      }
 
       prepareReportArea(playerData, currentPlayTime);
-      const reportArea = document.getElementById('reportArea');
       
       setTimeout(() => {
         html2canvas(reportArea, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+          // ★ JPEGに変換 ★
           const jpegUrl = canvas.toDataURL('image/jpeg', 0.9); 
-          const now = new Date();
-          const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-          const fileName = `poker_result_${dateStr}.jpg`;
+          
+          // ★ ポップアップに画像を設定して表示 ★
+          const imgEl = document.getElementById('generatedImage');
+          imgEl.src = jpegUrl;
+          document.getElementById('saveImageOverlay').classList.add('show');
+          
+          btn.innerText = "💾 画像を表示しました";
 
-          const link = document.createElement('a');
-          link.href = jpegUrl; link.download = fileName; link.click();
-
+          // GASへデータ送信（バックグラウンドで実行）
           sendToGAS(playerData, btn);
         });
       }, 500);
@@ -552,17 +571,16 @@
       const GAS_URL = "https://script.google.com/macros/s/AKfycbxijPOgmKGDL-UL5eAqOBKrxKVfPl4v6hsdLcWbiuwMrCWSPI5fqxu3qOmXIFTrMYCi5A/exec";
       fetch(GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(playerData) })
       .then(() => {
-        alert("✨ 成績をスプレッドシートに記録しました。\n本日もお疲れ様でした！");
-        btn.innerText = "💾 成績を確定・記録する"; btn.disabled = false;
+        // 画像生成とは別に、スプレッドシート記録完了のお知らせ
+        console.log("GAS記録完了");
         
-        if(confirm("画面とタイマーをリセットして次のゲーム（または次回）の準備をしますか？")) {
-          set(ref(db, 'pokerSession/players'), []); 
-          update(ref(db, 'pokerSession/timer'), { running: false, elapsedSeconds: 0, lastUpdate: Date.now() });
-          location.reload();
-        }
+        btn.innerText = "💾 画像を再表示"; btn.disabled = false;
+        
+        // 注意：ここでは自動リセットの確認は出さない（画像を保存する時間を与えるため）
+        // ユーザーが「閉じる」を押すか、手動でページを離れるまで状態を維持
       }).catch(error => {
-        alert("通信エラーが発生しました。");
-        btn.innerText = "💾 成績を記録する"; btn.disabled = false;
+        console.error("GASエラー", error);
+        btn.innerText = "成績を確定（エラー）"; btn.disabled = false;
       });
     }
   </script>
