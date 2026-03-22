@@ -14,22 +14,18 @@
   body, button, p, div { font-family: 'KEYpro', sans-serif; }
   body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; text-align: center; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-x: hidden; }
   
-  .dashboard-container { display: flex; flex-direction: column; width: 100%; max-width: 1200px; height: 85vh; min-height: 650px; background-color: rgba(0, 0, 0, 0.8); border-radius: 16px; border: 2px solid #d4af37; box-shadow: 0 15px 50px rgba(0,0,0,0.9); overflow: hidden; }
+  .dashboard-container { display: flex; flex-direction: column; width: 100%; max-width: 1200px; height: 85vh; min-height: 650px; background-color: rgba(0, 0, 0, 0.8); border-radius: 16px; border: 2px solid #d4af37; box-shadow: 0 15px 50px rgba(0,0,0,0.9); overflow: hidden; position: relative; }
   
   .dashboard-main { display: flex; flex-direction: row; flex: 1; overflow: hidden; }
 
   .left-col { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid rgba(127, 140, 141, 0.3); background: rgba(0,0,0,0.4); position: relative; }
   .right-col { flex: 1.5; padding: 40px; display: flex; flex-direction: column; overflow: hidden; background: rgba(10, 15, 20, 0.6); gap: 30px; }
 
-  /* 左カラムのデザイン */
   .suits { font-size: 28px; letter-spacing: 12px; margin-bottom: 10px; opacity: 0.9; margin-right: -12px; }
   .suit-red { color: #ff4757; }
   .suit-black { color: #ffffff; }
   
-  /* ★ ロゴテキスト「KEYpro poker」を画像に忠実に再現（Work Sans Black 900で太さと間隔を調整、K, E, Yは大文字、p, r, oは小文字） */
   h1 { font-family: 'Work Sans', sans-serif; color: #d4af37; font-size: 50px; margin: 0 -4px 10px 0; text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: -3px; font-weight: 900; }
-  
-  /* pokerの部分は以前のVIPゴールドに合わせて維持 */
   h1 span { font-family: 'KEYpro', sans-serif; color: #d4af37; font-size: 14px; margin-left: 10px; font-weight: normal; text-transform: uppercase; letter-spacing: 4px; vertical-align: middle; }
 
   p.subtitle { font-size: 14px; margin-bottom: 40px; margin-right: -3px; color: #7f8fa6; letter-spacing: 3px; text-transform: uppercase; }
@@ -39,7 +35,6 @@
   .timer-label { font-size: 16px; color: #7f8fa6; margin-bottom: 10px; letter-spacing: 3px; text-transform: uppercase; margin-right: -3px; }
   .timer-display { background: #000; color: #2ed573; font-family: 'Courier New', monospace; font-size: 76px; font-weight: bold; padding: 15px 30px; border-radius: 8px; border: 1px solid #2f3542; margin-bottom: 20px; text-shadow: 0 0 25px rgba(46, 213, 115, 0.5); box-shadow: inset 0 0 30px rgba(0,0,0,1); letter-spacing: 2px; margin-right: -2px; }
   
-  /* ボトムエリア（小さくスマートなボタン群） */
   .dashboard-bottom { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; padding: 15px 40px; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.05); flex-shrink: 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
   
   .bottom-btn { display: block; width: 100%; max-width: 240px; padding: 12px 20px; font-weight: bold; text-decoration: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
@@ -50,47 +45,38 @@
   .bottom-btn.rules { background: transparent; color: #7f8fa6; font-size: 12px; border: 1px solid rgba(127, 140, 141, 0.5); }
   .bottom-btn.rules:hover { background: rgba(255,255,255,0.1); color: #ffffff; border-color: #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
   
-  /* 共通タイトルデザイン */
   .board-title { color: #d4af37; font-size: 20px; letter-spacing: 4px; font-weight: bold; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.4); padding-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4); margin-bottom: 10px; flex-shrink: 0; }
   .board-title::before { content: ''; display: inline-block; width: 6px; height: 20px; background-color: #d4af37; box-shadow: 0 0 10px #d4af37; }
   
-  /* 🔴 リエントリーランキング（恐怖デザイン： Nosiferフォント + 更新された詳細ドクロSVG） */
+  /* 🔴 リエントリーランキング（恐怖デザイン） */
   .live-ranking-list { display: flex; flex-direction: column; gap: 8px; width: 100%; flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-bottom: 10px; position: relative; }
   .live-ranking-list::-webkit-scrollbar { width: 4px; }
   .live-ranking-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
   .live-ranking-list::-webkit-scrollbar-thumb { background: #57606f; }
 
-  /* タイトルにホラーフォントと更新された詳細ドクロを追加 */
   .title-re-entry { font-family: 'Nosifer', sans-serif; color: #b30000; text-shadow: 0 0 15px rgba(179, 0, 0, 0.6); letter-spacing: 2px; border-bottom-color: rgba(179, 0, 0, 0.5); }
   .title-re-entry::before { background-color: #b30000; box-shadow: 0 0 10px #b30000; }
   .title-re-entry .title-skull { width: 22px; height: 22px; fill: #b30000; margin-left: 10px; filter: drop-shadow(0 0 5px #b30000); }
 
   .live-rank-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.7); border-left: 4px solid transparent; padding: 12px 20px; border-radius: 0 8px 8px 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,0.05); flex-shrink: 0; transition: all 0.3s; position: relative; overflow: hidden; border: 1px solid #333; }
-  
-  /* ★ カード背景に巨大な半透明の詳細ドクロを配置（以前のより複雑なデザイン） */
   .live-rank-card .card-skull-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; fill: rgba(255, 255, 255, 0.04); z-index: 0; pointer-events: none; }
 
-  /* 色を錆びたような血の赤にシフト */
   .live-rank-card.worst-1 { border-left-color: #b30000; background: linear-gradient(90deg, rgba(179, 0, 0, 0.1) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(179, 0, 0, 0.3); }
   .live-rank-card.worst-2 { border-left-color: #bf9b30; background: linear-gradient(90deg, rgba(191, 155, 48, 0.08) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(191, 155, 48, 0.2); }
   .live-rank-card.worst-3 { border-left-color: #a67c00; background: linear-gradient(90deg, rgba(166, 124, 0, 0.05) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(166, 124, 0, 0.1); }
 
-  /* 順位表示（Nosiferフォントで恐怖感を） */
   .rank-col { width: 60px; display: flex; align-items: center; justify-content: flex-start; z-index: 1; }
   .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: 36px; font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #57606f; letter-spacing: 2px; line-height: 1; }
   
   .worst-1 .rank-badge-text { -webkit-text-stroke-color: #b30000; filter: drop-shadow(0 0 10px rgba(179, 0, 0, 0.7)); }
-  .worst-1 .card-skull-bg { fill: rgba(179, 0, 0, 0.06); } /* ★ 1位は赤い詳細ドクロ */
-
+  .worst-1 .card-skull-bg { fill: rgba(179, 0, 0, 0.06); }
   .worst-2 .rank-badge-text { -webkit-text-stroke-color: #bf9b30; filter: drop-shadow(0 0 8px rgba(191, 155, 48, 0.5)); }
   .worst-3 .rank-badge-text { -webkit-text-stroke-color: #a67c00; filter: drop-shadow(0 0 6px rgba(166, 124, 0, 0.4)); }
 
-  /* 名前表示 */
   .name-col { flex-grow: 1; text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 4px; justify-content: center; z-index: 1; }
   .player-name-item { font-size: 18px; font-weight: bold; color: #f1f2f6; letter-spacing: 2px; text-transform: uppercase; }
   .worst-1 .player-name-item { font-size: 20px; color: #b30000; text-shadow: 0 0 8px rgba(179, 0, 0, 0.5); }
 
-  /* リエントリー回数表示（ Nosiferフォント + 血の赤） */
   .entry-col { display: flex; align-items: center; justify-content: flex-end; width: 120px; z-index: 1; }
   .entry-badge { display: flex; align-items: baseline; gap: 4px; }
   .entry-badge .num { font-family: 'Nosifer', sans-serif; font-size: 32px; font-weight: normal; line-height: 1; color: #7f8fa6; }
@@ -130,22 +116,57 @@
   .modal-close-btn { background: transparent; color: #7f8fa6; border: 1px solid #555; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-size: 12px; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; margin-right: -2px; }
   .modal-close-btn:hover { background: #ffffff; color: #000; border-color: #ffffff; }
 
+  /* ★★★ 追加：チップが降り注ぐアニメーション用のスタイル ★★★ */
+  .chip-rain-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* クリックの邪魔をしない */
+    z-index: 9999;
+    overflow: hidden;
+  }
+  .falling-chip {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.6);
+    border: 4px dashed rgba(255,255,255,0.7);
+    animation: fall linear forwards;
+  }
+  .falling-chip[data-color="red"] { background: radial-gradient(circle, #e74c3c, #c0392b); }
+  .falling-chip[data-color="black"] { background: radial-gradient(circle, #2c3e50, #000000); }
+  .falling-chip[data-color="gold"] { background: radial-gradient(circle, #f1c40f, #d35400); color: #000; border-color: rgba(0,0,0,0.5); }
+  .falling-chip[data-color="green"] { background: radial-gradient(circle, #2ecc71, #27ae60); }
+  .falling-chip[data-color="blue"] { background: radial-gradient(circle, #3498db, #2980b9); }
+
+  @keyframes fall {
+    0% { transform: translateY(-100px) rotate(0deg) scale(0.8); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg) scale(1.2); opacity: 0; }
+  }
+
   /* 📱 スマホ用の設定 */
   @media screen and (max-width: 900px) {
     body { padding: 10px; display: block; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
     .dashboard-container { flex-direction: column; height: auto; min-height: auto; border-radius: 8px; border-width: 1px; }
-    
     .dashboard-main { flex-direction: column; overflow: visible; }
     .left-col { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 30px 15px; }
     .right-col { padding: 25px 15px; overflow: visible; gap: 20px; }
-    
     .dashboard-bottom { flex-direction: row; gap: 10px; padding: 15px 10px; }
     .bottom-btn { padding: 10px 15px; max-width: 180px; letter-spacing: 1px; }
     .bottom-btn.ranking { font-size: 13px; }
     .bottom-btn.rules { font-size: 11px; }
     
     .suits { font-size: 32px; }
-    h1 { font-size: 36px; } /* スマホ時も少し大きめに */
+    h1 { font-size: 36px; } 
     .timer-display { font-size: 56px; padding: 10px 20px; margin-bottom: 10px; }
     
     .board-title { font-size: 18px; text-align: center; justify-content: center; margin-right: -4px; }
@@ -173,6 +194,9 @@
     .active-players-grid { justify-content: center; max-height: none; }
     
     .footer-text { position: static; text-align: center; margin-top: 20px; padding-bottom: 20px; }
+    
+    /* スマホ版ではチップを少し小さく */
+    .falling-chip { width: 40px; height: 40px; font-size: 16px; border-width: 3px; }
   }
 </style>
 </head>
@@ -246,6 +270,42 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // ★ プレイヤー追加検知のための変数（最初は -1 にしておく）
+    let previousPlayerCount = -1;
+
+    // ★ チップを降らせるアニメーション関数
+    function triggerChipRain() {
+      const container = document.createElement('div');
+      container.className = 'chip-rain-container';
+      document.body.appendChild(container);
+
+      const colors = ['red', 'black', 'gold', 'green', 'blue'];
+      const suits = ['♠', '♥', '♣', '♦'];
+      const chipCount = window.innerWidth < 600 ? 20 : 40; // スマホは少なめ、PCは多め
+
+      for (let i = 0; i < chipCount; i++) {
+        const chip = document.createElement('div');
+        chip.className = 'falling-chip';
+        chip.setAttribute('data-color', colors[Math.floor(Math.random() * colors.length)]);
+        chip.innerText = suits[Math.floor(Math.random() * suits.length)];
+        
+        // 画面の横幅のランダムな位置から降らす
+        chip.style.left = (Math.random() * 100) + 'vw';
+        
+        // 落ちる速度と開始タイミングをバラバラに
+        const duration = Math.random() * 2 + 2; // 2秒〜4秒
+        chip.style.animationDuration = duration + 's';
+        chip.style.animationDelay = (Math.random() * 0.5) + 's';
+        
+        container.appendChild(chip);
+      }
+
+      // アニメーションが終わったらコンテナごと削除して軽くする
+      setTimeout(() => {
+        container.remove();
+      }, 5000);
+    }
+
     let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
 
     onValue(ref(db, 'pokerSession/timer'), (snapshot) => {
@@ -283,7 +343,14 @@
         }
       });
 
-      // 🔴 リエントリーランキングの描画（恐怖デザイン対応）
+      // ★ プレイヤー人数の増加を検知して演出を発動！
+      const currentCount = activePlayers.length;
+      if (previousPlayerCount !== -1 && currentCount > previousPlayerCount) {
+        triggerChipRain();
+      }
+      previousPlayerCount = currentCount; // 現在の人数を記録して次回に備える
+
+      // 🔴 リエントリーランキングの描画
       if (reEntryPlayers.length === 0) {
         rankingBoard.innerHTML = '<div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>';
       } else {
