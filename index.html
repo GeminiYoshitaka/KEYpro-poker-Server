@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ポーカー管理 - KEYpro poker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
 <style>
   /* 全体の設定 */
   *, *::before, *::after { box-sizing: border-box; }
@@ -40,7 +43,7 @@
   .timer-label { font-size: 16px; color: #7f8fa6; margin-bottom: 10px; letter-spacing: 3px; text-transform: uppercase; margin-right: -3px; }
   .timer-display { background: #000; color: #2ed573; font-family: 'Courier New', monospace; font-size: 76px; font-weight: bold; padding: 15px 30px; border-radius: 8px; border: 1px solid #2f3542; margin-bottom: 20px; text-shadow: 0 0 25px rgba(46, 213, 115, 0.5); box-shadow: inset 0 0 30px rgba(0,0,0,1); letter-spacing: 2px; margin-right: -2px; }
   
-  /* ★ ボトムエリア（ボタンを小さくスマートに調整） */
+  /* ボトムエリア（小さくスマートなボタン群） */
   .dashboard-bottom { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; padding: 15px 40px; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.05); flex-shrink: 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
   
   .bottom-btn { display: block; width: 100%; max-width: 240px; padding: 12px 20px; font-weight: bold; text-decoration: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
@@ -55,40 +58,51 @@
   .board-title { color: #d4af37; font-size: 20px; letter-spacing: 4px; font-weight: bold; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.4); padding-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.4); margin-bottom: 10px; flex-shrink: 0; }
   .board-title::before { content: ''; display: inline-block; width: 6px; height: 20px; background-color: #d4af37; box-shadow: 0 0 10px #d4af37; }
   
-  /* 🔴 リエントリーランキング（新デザイン：サイバーリスト風） */
-  .live-ranking-list { display: flex; flex-direction: column; gap: 8px; width: 100%; flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-bottom: 10px; }
+  /* 🔴 リエントリーランキング（恐怖デザイン： Nosiferフォント + ドクロSVG） */
+  .live-ranking-list { display: flex; flex-direction: column; gap: 8px; width: 100%; flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-bottom: 10px; position: relative; }
   .live-ranking-list::-webkit-scrollbar { width: 4px; }
   .live-ranking-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
   .live-ranking-list::-webkit-scrollbar-thumb { background: #57606f; }
 
-  .live-rank-card { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border-left: 4px solid transparent; padding: 12px 20px; border-radius: 0 8px 8px 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,0.05); flex-shrink: 0; transition: all 0.3s; position: relative; overflow: hidden; }
-  
-  .live-rank-card.worst-1 { border-left-color: #ff4757; background: linear-gradient(90deg, rgba(255, 71, 87, 0.1) 0%, rgba(0,0,0,0) 100%); }
-  .live-rank-card.worst-2 { border-left-color: #ffa502; background: linear-gradient(90deg, rgba(255, 165, 2, 0.1) 0%, rgba(0,0,0,0) 100%); }
-  .live-rank-card.worst-3 { border-left-color: #eccc68; background: linear-gradient(90deg, rgba(236, 204, 104, 0.05) 0%, rgba(0,0,0,0) 100%); }
+  /* タイトルにホラーフォントとドクロを追加 */
+  .title-re-entry { font-family: 'Nosifer', sans-serif; color: #b30000; text-shadow: 0 0 15px rgba(179, 0, 0, 0.6); letter-spacing: 2px; border-bottom-color: rgba(179, 0, 0, 0.5); }
+  .title-re-entry::before { background-color: #b30000; box-shadow: 0 0 10px #b30000; }
+  .title-re-entry .title-skull { width: 20px; height: 20px; fill: #b30000; margin-left: 10px; filter: drop-shadow(0 0 5px #b30000); }
 
-  /* 順位表示（アウトライン文字でサイバーに） */
-  .rank-col { width: 60px; display: flex; align-items: center; justify-content: flex-start; }
-  .rank-badge-text { font-family: 'Courier New', monospace; font-size: 42px; font-weight: 900; font-style: italic; color: transparent; -webkit-text-stroke: 1.5px #57606f; letter-spacing: 2px; line-height: 1; }
+  .live-rank-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.7); border-left: 4px solid transparent; padding: 12px 20px; border-radius: 0 8px 8px 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,0.05); flex-shrink: 0; transition: all 0.3s; position: relative; overflow: hidden; border: 1px solid #333; }
   
-  .worst-1 .rank-badge-text { -webkit-text-stroke-color: #ff4757; filter: drop-shadow(0 0 10px rgba(255, 71, 87, 0.6)); }
-  .worst-2 .rank-badge-text { -webkit-text-stroke-color: #ffa502; filter: drop-shadow(0 0 8px rgba(255, 165, 2, 0.5)); }
-  .worst-3 .rank-badge-text { -webkit-text-stroke-color: #eccc68; filter: drop-shadow(0 0 6px rgba(236, 204, 104, 0.4)); }
+  /* ★ カード背景に巨大な半透明ドクロを配置 */
+  .live-rank-card .card-skull-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; fill: rgba(255, 255, 255, 0.03); z-index: 0; pointer-events: none; }
+
+  /* 色を錆びたような血の赤にシフト */
+  .live-rank-card.worst-1 { border-left-color: #b30000; background: linear-gradient(90deg, rgba(179, 0, 0, 0.1) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(179, 0, 0, 0.3); }
+  .live-rank-card.worst-2 { border-left-color: #bf9b30; background: linear-gradient(90deg, rgba(191, 155, 48, 0.08) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(191, 155, 48, 0.2); }
+  .live-rank-card.worst-3 { border-left-color: #a67c00; background: linear-gradient(90deg, rgba(166, 124, 0, 0.05) 0%, rgba(0,0,0,0.7) 100%); border-color: rgba(166, 124, 0, 0.1); }
+
+  /* 順位表示（Nosiferフォントで恐怖感を） */
+  .rank-col { width: 60px; display: flex; align-items: center; justify-content: flex-start; z-index: 1; }
+  .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: 36px; font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #57606f; letter-spacing: 2px; line-height: 1; }
+  
+  .worst-1 .rank-badge-text { -webkit-text-stroke-color: #b30000; filter: drop-shadow(0 0 10px rgba(179, 0, 0, 0.7)); }
+  .worst-1 .card-skull-bg { fill: rgba(179, 0, 0, 0.05); } /* ★ 1位は赤いドクロ */
+
+  .worst-2 .rank-badge-text { -webkit-text-stroke-color: #bf9b30; filter: drop-shadow(0 0 8px rgba(191, 155, 48, 0.5)); }
+  .worst-3 .rank-badge-text { -webkit-text-stroke-color: #a67c00; filter: drop-shadow(0 0 6px rgba(166, 124, 0, 0.4)); }
 
   /* 名前表示 */
-  .name-col { flex-grow: 1; text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+  .name-col { flex-grow: 1; text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 4px; justify-content: center; z-index: 1; }
   .player-name-item { font-size: 18px; font-weight: bold; color: #f1f2f6; letter-spacing: 2px; text-transform: uppercase; }
-  .worst-1 .player-name-item { font-size: 20px; color: #ff4757; text-shadow: 0 0 8px rgba(255, 71, 87, 0.4); }
+  .worst-1 .player-name-item { font-size: 20px; color: #b30000; text-shadow: 0 0 8px rgba(179, 0, 0, 0.5); }
 
-  /* リエントリー回数表示 */
-  .entry-col { display: flex; align-items: center; justify-content: flex-end; width: 120px; }
+  /* リエントリー回数表示（ Nosiferフォント + 血の赤） */
+  .entry-col { display: flex; align-items: center; justify-content: flex-end; width: 120px; z-index: 1; }
   .entry-badge { display: flex; align-items: baseline; gap: 4px; }
-  .entry-badge .num { font-size: 38px; font-weight: 900; font-family: 'Courier New', monospace; line-height: 1; color: #7f8fa6; }
+  .entry-badge .num { font-family: 'Nosifer', sans-serif; font-size: 32px; font-weight: normal; line-height: 1; color: #7f8fa6; }
   .entry-badge .unit { font-size: 14px; color: #7f8fa6; font-weight: normal; letter-spacing: 1px; }
 
-  .worst-1 .entry-badge .num { color: #ff4757; text-shadow: 0 0 15px rgba(255, 71, 87, 0.5); }
-  .worst-2 .entry-badge .num { color: #ffa502; text-shadow: 0 0 12px rgba(255, 165, 2, 0.4); }
-  .worst-3 .entry-badge .num { color: #eccc68; text-shadow: 0 0 10px rgba(236, 204, 104, 0.3); }
+  .worst-1 .entry-badge .num { color: #b30000; text-shadow: 0 0 15px rgba(179, 0, 0, 0.6); }
+  .worst-2 .entry-badge .num { color: #bf9b30; text-shadow: 0 0 12px rgba(191, 155, 48, 0.5); }
+  .worst-3 .entry-badge .num { color: #a67c00; text-shadow: 0 0 10px rgba(166, 124, 0, 0.4); }
 
   /* 🟢 参加者リスト */
   .title-active { color: #d4af37; border-bottom-color: rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.4); margin-top: auto; }
@@ -129,7 +143,6 @@
     .left-col { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 30px 15px; }
     .right-col { padding: 25px 15px; overflow: visible; gap: 20px; }
     
-    /* スマホ時のボタン群も小さく横並びでスッキリ配置 */
     .dashboard-bottom { flex-direction: row; gap: 10px; padding: 15px 10px; }
     .bottom-btn { padding: 10px 15px; max-width: 180px; letter-spacing: 1px; }
     .bottom-btn.ranking { font-size: 13px; }
@@ -142,18 +155,22 @@
     .board-title { font-size: 18px; text-align: center; justify-content: center; margin-right: -4px; }
     .board-title::before { display: none; }
     
+    .title-re-entry { letter-spacing: 1px; }
+    .title-re-entry .title-skull { display: none; }
+
     .live-ranking-list { height: auto; overflow-y: visible; padding-right: 0; }
     .live-rank-card { padding: 10px 15px; border-radius: 0 4px 4px 0; border-left-width: 3px; }
+    .live-rank-card .card-skull-bg { width: 80px; height: 80px; }
     
     .rank-col { width: 45px; }
-    .rank-badge-text { font-size: 32px; }
+    .rank-badge-text { font-size: 28px; }
     
     .name-col { padding-left: 10px; gap: 2px; }
     .player-name-item { font-size: 15px; }
     .worst-1 .player-name-item { font-size: 16px; }
     
     .entry-col { width: 80px; }
-    .entry-badge .num { font-size: 28px; }
+    .entry-badge .num { font-size: 24px; }
     .entry-badge .unit { font-size: 10px; }
     
     .title-active { margin-top: 10px; }
@@ -181,7 +198,10 @@
       </div>
 
       <div class="right-col">
-        <div class="board-title">RE-ENTRY RANKING</div>
+        <div class="board-title title-re-entry">
+          RE-ENTRY RANKING
+          <svg class="title-skull" viewBox="0 0 448 512"><path d="M439.2 236.1l-20.1-11.9c-6.4-3.8-14.6-1.6-18.4 5.1-18.9 34.6-56.3 58.7-99.1 58.7-42.8 0-80.1-24.1-99.1-58.7-3.8-6.7-12-8.9-18.4-5.1l-20.1 11.9c-6.7 4-8.9 12.6-5 19.3C181.8 290.4 200.7 320 224 320s42.2-29.6 66.8-64.7c3.9-6.7 1.7-15.3-5-19.3zm-111.2-120c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zm64 0c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zM224 0C100.3 0 0 100.3 0 224v192c0 53 43 96 96 96h256c53 0 96-43 96-96V224C448 100.3 347.7 0 224 0zm96 416c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm-128 0c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm160-224C352 110.3 294.5 48 224 48s-128 62.3-128 144v14.1c0 23.6 15.1 44.8 36.9 52.8l10.8 4c16.3 6 30.1 16.6 39.4 30.2 11.2-16.1 27.6-29 46.9-36l10.8-4c21.8-8 36.9-29.2 36.9-52.8V192zm-32 96c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg>
+        </div>
         <div id="topLiveBoard" class="live-ranking-list">
           <div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>
         </div>
@@ -267,7 +287,7 @@
         }
       });
 
-      // 🔴 リエントリーランキングの描画（新デザイン対応）
+      // 🔴 リエントリーランキングの描画（恐怖デザイン対応）
       if (reEntryPlayers.length === 0) {
         rankingBoard.innerHTML = '<div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>';
       } else {
@@ -285,7 +305,6 @@
 
         let html = '';
         groupArray.forEach((group, index) => {
-          // 順位を01, 02...のようにゼロ埋めしてクールに
           let rankStr = String(index + 1).padStart(2, '0');
           let rankClass = "worst-other";
           
@@ -298,6 +317,8 @@
 
           html += `
             <div class="live-rank-card ${rankClass}">
+              <svg class="card-skull-bg" viewBox="0 0 448 512"><path d="M439.2 236.1l-20.1-11.9c-6.4-3.8-14.6-1.6-18.4 5.1-18.9 34.6-56.3 58.7-99.1 58.7-42.8 0-80.1-24.1-99.1-58.7-3.8-6.7-12-8.9-18.4-5.1l-20.1 11.9c-6.7 4-8.9 12.6-5 19.3C181.8 290.4 200.7 320 224 320s42.2-29.6 66.8-64.7c3.9-6.7 1.7-15.3-5-19.3zm-111.2-120c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zm64 0c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zM224 0C100.3 0 0 100.3 0 224v192c0 53 43 96 96 96h256c53 0 96-43 96-96V224C448 100.3 347.7 0 224 0zm96 416c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm-128 0c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm160-224C352 110.3 294.5 48 224 48s-128 62.3-128 144v14.1c0 23.6 15.1 44.8 36.9 52.8l10.8 4c16.3 6 30.1 16.6 39.4 30.2 11.2-16.1 27.6-29 46.9-36l10.8-4c21.8-8 36.9-29.2 36.9-52.8V192zm-32 96c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg>
+              
               <div class="rank-col">
                 <div class="rank-badge-text">${rankStr}</div>
               </div>
@@ -315,7 +336,7 @@
 
       // 🟢 参加者リストの描画
       if (activePlayers.length === 0) {
-        playersBoard.innerHTML = '<div class="empty-text" style="margin-top: 10px;">現在プレイ中の参加者はいません</div>';
+        playersBoard.innerHTML = '<div class="empty-text">現在プレイ中の参加者はいません</div>';
       } else {
         let playersHtml = '';
         activePlayers.forEach(p => {
