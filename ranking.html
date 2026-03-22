@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HALL OF FAME - KEYpro poker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,13 +10,14 @@
 <style>
   /* 全体の設定 */
   *, *::before, *::after { box-sizing: border-box; }
+  html, body { max-width: 100vw; overflow-x: hidden; }
 
   body, button, h1, p, div { font-family: 'KEYpro', sans-serif; }
-  body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; text-align: center; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-x: hidden; }
+  body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; text-align: center; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   
   .container { display: flex; flex-direction: column; width: 100%; max-width: 900px; height: 85vh; min-height: 650px; background-color: rgba(0, 0, 0, 0.8); border-radius: 16px; border: 2px solid #d4af37; box-shadow: 0 15px 50px rgba(0,0,0,0.9); overflow: hidden; padding: 40px; position: relative; }
 
-  /* ロゴフォント（画像に忠実に再現） */
+  /* ロゴフォント */
   h1 { font-family: 'Work Sans', sans-serif; color: #d4af37; font-size: 50px; margin: 0 0 5px 0; text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); letter-spacing: -3px; font-weight: 900; }
   h1 span { font-family: 'KEYpro', sans-serif; color: #d4af37; font-size: 14px; margin-left: 10px; font-weight: normal; text-transform: uppercase; letter-spacing: 4px; vertical-align: middle; }
 
@@ -32,7 +33,7 @@
   .ranking-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
   .ranking-list::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
 
-  /* ★ お気に入りのネオン・カードデザインを復活 */
+  /* カードデザイン（VIPゴールド仕様） */
   .rank-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.7); border: 1px solid #333; padding: 15px 25px; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); flex-shrink: 0; transition: all 0.3s; border-left: 5px solid #7f8fa6; position: relative; overflow: hidden; }
   .rank-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 100%); opacity: 0.7; pointer-events: none; }
   
@@ -40,7 +41,7 @@
   .rank-card.rank-2 { border-left-color: #bdc3c7; background: linear-gradient(90deg, rgba(189, 195, 199, 0.1) 0%, rgba(0,0,0,0.7) 50%); border-color: rgba(189, 195, 199, 0.3); }
   .rank-card.rank-3 { border-left-color: #cd7f32; background: linear-gradient(90deg, rgba(205, 127, 50, 0.1) 0%, rgba(0,0,0,0.7) 50%); border-color: rgba(205, 127, 50, 0.2); }
 
-  /* ★ 順位表示（円を無くし、数字のみが発光するデザイン） */
+  /* 順位表示（円なし、光る数字のみ） */
   .rank-col { display: flex; align-items: center; justify-content: center; width: 40px; margin-right: 15px; z-index: 1; }
   .rank-badge-text { font-family: 'Courier New', monospace; font-size: 42px; font-weight: bold; color: #7f8fa6; letter-spacing: 2px; }
   
@@ -48,19 +49,22 @@
   .rank-2 .rank-badge-text { color: #bdc3c7; text-shadow: 0 0 10px rgba(189, 195, 199, 0.6); }
   .rank-3 .rank-badge-text { color: #cd7f32; text-shadow: 0 0 10px rgba(205, 127, 50, 0.5); }
 
-  /* 名前表示 */
-  .name-col { flex-grow: 1; text-align: left; padding-left: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; z-index: 1; }
+  /* 名前・参加回数表示 */
+  .name-col { flex-grow: 1; text-align: left; padding-left: 10px; display: flex; flex-direction: column; gap: 2px; justify-content: center; z-index: 1; }
   .player-name { font-size: 22px; font-weight: bold; color: #f1f2f6; letter-spacing: 2px; text-transform: uppercase; text-shadow: 1px 1px 2px #000; }
   .rank-1 .player-name { font-size: 26px; color: #f1c40f; }
+  
+  /* GASから取得した「参加回数（games）」の表示スタイル */
+  .games-played { font-size: 12px; color: #7f8fa6; letter-spacing: 1px; font-family: 'Courier New', monospace; font-weight: bold; }
+  .rank-1 .games-played { color: rgba(241, 196, 15, 0.8); }
 
-  /* スコア（ポイント）表示 */
+  /* スコア（Pay）表示 - 単位なし */
   .score-col { font-weight: bold; font-size: 38px; text-align: right; font-family: 'Courier New', monospace; letter-spacing: 1px; line-height: 1; z-index: 1; }
-  .score-unit { font-size: 16px; font-weight: normal; margin-left: 6px; color: #bdc3c7; font-family: 'KEYpro', sans-serif; position: relative; top: -6px; }
 
   .score-plus { color: #2ed573; text-shadow: 0 0 15px rgba(46, 213, 115, 0.4); }
   .score-minus { color: #ff4757; text-shadow: 0 0 15px rgba(255, 71, 87, 0.4); }
 
-  .empty-text { color: #57606f; font-size: 16px; width: 100%; text-align: center; margin-top: 40px; letter-spacing: 2px; line-height: 2; font-weight: bold; }
+  .empty-text { color: #d4af37; font-size: 18px; width: 100%; text-align: center; margin-top: 40px; letter-spacing: 2px; line-height: 2; font-weight: bold; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
 
   /* 戻るボタン */
   .btn-back { display: block; width: 100%; max-width: 300px; margin: 0 auto; padding: 18px; background: transparent; color: #d4af37; font-size: 16px; font-weight: bold; text-align: center; text-decoration: none; border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 50px; transition: all 0.3s; letter-spacing: 2px; text-transform: uppercase; flex-shrink: 0; }
@@ -85,9 +89,9 @@
     .name-col { padding-left: 5px; }
     .player-name { font-size: 16px; }
     .rank-1 .player-name { font-size: 18px; }
+    .games-played { font-size: 10px; }
     
     .score-col { font-size: 24px; }
-    .score-unit { font-size: 12px; top: -2px; }
     
     .btn-back { padding: 15px; font-size: 14px; margin-top: 15px; }
   }
@@ -99,91 +103,76 @@
     <h1>KEYpro<span>poker</span></h1>
     <p class="subtitle">HALL OF FAME</p>
 
-    <div class="board-title">CURRENT SESSION RANKING</div>
+    <div class="board-title">ALL TIME RANKING</div>
     
     <div id="rankingBoard" class="ranking-list">
-      <div class="empty-text">現在プレイ中の参加者はいません</div>
+      <div class="empty-text">👑 過去の全データを集計中...</div>
     </div>
 
     <a href="index.html" class="btn-back">◀ ダッシュボードに戻る</a>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDWO4bFy5lAHALlnKr32b9TTTXNcNQuIqU",
-      authDomain: "keypro-poker-server.firebaseapp.com",
-      projectId: "keypro-poker-server",
-      storageBucket: "keypro-poker-server.firebasestorage.app",
-      messagingSenderId: "953048452758",
-      appId: "1:953048452758:web:16aa168ae600cc97e67cb7",
-      measurementId: "G-3HVG0EP54D"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const STARTING_CHIPS = 20000;
+  <script>
+    // ★ 指定いただいたご自身のGASの「ウェブアプリのURL」をセットしました！
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxijPOgmKGDL-UL5eAqOBKrxKVfPl4v6hsdLcWbiuwMrCWSPI5fqxu3qOmXIFTrMYCi5A/exec";
 
     function formatNumber(num) {
       return num.toLocaleString();
     }
 
-    onValue(ref(db, 'pokerSession/players'), (snapshot) => {
-      const draftData = snapshot.val() || [];
+    function loadRanking() {
       const board = document.getElementById('rankingBoard');
-      
-      let players = [];
-      
-      draftData.forEach(p => {
-        if (p.name && p.name.trim() !== "") {
-          let entry = p.entry || 0;
-          let finalChips = p.finalChips || 0;
-          // ポイント計算（最終持ち点 - (エントリー回数 × 20000)）
-          let result = finalChips - (entry * STARTING_CHIPS);
-          players.push({ name: p.name, score: result });
-        }
-      });
 
-      // スコアが高い順（降順）にソート
-      players.sort((a, b) => b.score - a.score);
+      // GAS（スプレッドシート）からデータを取得
+      fetch(GAS_URL)
+        .then(response => {
+          if (!response.ok) { throw new Error('ネットワークエラー'); }
+          return response.json();
+        })
+        .then(players => {
+          if (!players || players.length === 0) {
+            board.innerHTML = '<div class="empty-text">まだ記録されたデータがありません</div>';
+            return;
+          }
 
-      if (players.length === 0) {
-        board.innerHTML = '<div class="empty-text">現在プレイ中の参加者はいません</div>';
-        return;
-      }
+          let html = '';
+          players.forEach((player, index) => {
+            let rankStr = (index + 1);
+            let rankClass = "rank-other";
+            
+            if (index === 0) { rankClass = "rank-1"; }
+            else if (index === 1) { rankClass = "rank-2"; }
+            else if (index === 2) { rankClass = "rank-3"; }
 
-      let html = '';
-      players.forEach((player, index) => {
-        let rankStr = (index + 1);
-        let rankClass = "rank-other";
-        
-        if (index === 0) { rankClass = "rank-1"; }
-        else if (index === 1) { rankClass = "rank-2"; }
-        else if (index === 2) { rankClass = "rank-3"; }
+            // GASから渡される player.pay を使用してプラスマイナスを判定
+            let scoreClass = player.pay > 0 ? "score-plus" : (player.pay < 0 ? "score-minus" : "");
+            let scoreSign = player.pay > 0 ? "+" : "";
 
-        // スコアがプラスなら緑色、マイナスなら赤色
-        let scoreClass = player.score > 0 ? "score-plus" : (player.score < 0 ? "score-minus" : "");
-        let scoreSign = player.score > 0 ? "+" : "";
+            html += `
+              <div class="rank-card ${rankClass}">
+                <div class="rank-col">
+                  <div class="rank-badge-text">${rankStr}</div>
+                </div>
+                <div class="name-col">
+                  <div class="player-name">${player.name}</div>
+                  <div class="games-played">${player.games} GAMES PLAYED</div>
+                </div>
+                <div class="score-col ${scoreClass}">
+                  <span class="num">${scoreSign}${formatNumber(player.pay)}</span>
+                </div>
+              </div>
+            `;
+          });
+          board.innerHTML = html;
+        })
+        .catch(error => {
+          console.error("エラー:", error);
+          board.innerHTML = '<div class="empty-text" style="color:#e74c3c;">データの読み込みに失敗しました。<br>GASの設定を確認してください。</div>';
+        });
+    }
 
-        html += `
-          <div class="rank-card ${rankClass}">
-            <div class="rank-col">
-              <div class="rank-badge-text">${rankStr}</div>
-            </div>
-            <div class="name-col">
-              <div class="player-name">${player.name}</div>
-            </div>
-            <div class="score-col ${scoreClass}">
-              <span class="num">${scoreSign}${formatNumber(player.score)}</span>
-              <span class="score-unit">pt</span>
-            </div>
-          </div>
-        `;
-      });
-      board.innerHTML = html;
-    });
+    // 画面が読み込まれたら自動でランキングを取得開始
+    window.onload = loadRanking;
   </script>
 </body>
 </html>
