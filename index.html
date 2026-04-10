@@ -19,7 +19,7 @@
   .left-col { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid rgba(127, 140, 141, 0.3); background: rgba(0,0,0,0.4); position: relative; }
   .right-col { flex: 1.5; padding: 40px; display: flex; flex-direction: column; overflow: hidden; background: rgba(15, 0, 0, 0.6); gap: 20px; }
 
-  /* ★ PCフルスクリーン時に文字が巨大化するように clamp() を大幅に引き上げ */
+  /* 他の文字サイズは現状を維持（ clamp() の最大値を高く設定 ） */
   .suits { font-size: clamp(28px, 3.5vw, 50px); letter-spacing: 12px; margin-bottom: 10px; opacity: 0.9; margin-right: -12px; }
   .suit-red { color: #ff4757; }
   .suit-black { color: #ffffff; }
@@ -109,8 +109,30 @@
   .secret-btn { position: fixed; top: 15px; left: 15px; background: transparent; color: #57606f; border: none; font-size: 28px; cursor: pointer; padding: 10px; transition: color 0.3s; outline: none; z-index: 100; }
   .secret-btn:hover { color: #ffffff; }
 
-  .nav-buttons { position: absolute; bottom: 25px; right: 25px; display: flex; gap: 15px; z-index: 50; }
-  .discreet-btn { background: rgba(0, 0, 0, 0.6); color: #7f8fa6; border: 1px solid rgba(127, 140, 141, 0.5); padding: 12px 30px; font-size: clamp(12px, 1.5vw, 18px); border-radius: 50px; text-decoration: none; letter-spacing: 2px; transition: all 0.3s ease; font-weight: bold; }
+  /* ★ ナビゲーションボタン群の配置と間隔を微調整（重なり防止） */
+  .nav-buttons {
+    position: absolute;
+    bottom: 30px; /* ★ 微調整: 25px -> 30px 角から少し離す */
+    right: 30px;  /* ★ 微調整: 25px -> 30px 角から少し離す */
+    display: flex;
+    gap: 25px;    /* ★ 拡大: 15px -> 25px ボタン同士の間隔を広げて重なりを防ぐ */
+    z-index: 50;
+  }
+  
+  /* ★ Discreet Button (控えめなボタン) のスタイル微調整 */
+  .discreet-btn {
+    background: rgba(0, 0, 0, 0.6);
+    color: #7f8fa6;
+    border: 1px solid rgba(127, 140, 141, 0.5);
+    padding: 10px 25px; /* ★ 微調整: 12px 30px -> 10px 25px 少しコンパクトに */
+    font-size: clamp(12px, 1.2vw, 16px); /* ★ 微調整: 最大 18px -> 16px 大画面でも巨大化しすぎず、文字が収まるように */
+    border-radius: 50px;
+    text-decoration: none;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-align: center; /* 文字を中央寄せ */
+  }
   .discreet-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
 
   .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -135,7 +157,7 @@
   @keyframes rise { 0% { top: 110vh; transform: translateX(0) scale(1); opacity: 1; } 100% { top: -10vh; transform: translateX(var(--tx)) scale(0.5); opacity: 0; } }
   @keyframes zoom { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; left: 50vw; top: 50vh; } 20% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(var(--s)); opacity: 0; left: var(--tx); top: var(--ty); } }
 
-  /* 📱 スマホ用 (変更なし) */
+  /* 📱 スマホ用 (スマホ時のボタン配置などは維持) */
   @media screen and (max-width: 900px) {
     body { padding: 10px; display: block; overflow-x: hidden; }
     .dashboard-container { flex-direction: column; height: auto; min-height: auto; border-radius: 8px; border-width: 1px; width: 100%; max-width: 100%; padding-bottom: 20px;}
@@ -166,7 +188,7 @@
     .active-players-grid { justify-content: center; max-height: none; }
     
     /* スマホ時はボタンを中央下部に横並びで配置 */
-    .nav-buttons { position: static; justify-content: center; margin-top: 15px; margin-bottom: 20px; }
+    .nav-buttons { position: static; justify-content: center; margin-top: 15px; margin-bottom: 20px; gap: 10px; }
     .discreet-btn { padding: 10px 15px; font-size: 11px; }
     .footer-text { position: static; text-align: center; margin-top: 10px; padding-bottom: 20px; }
     .secret-btn { top: auto; bottom: 15px; left: 15px; font-size: 24px; }
