@@ -84,96 +84,106 @@
   .active-players-grid { display: flex; width: 100%; max-height: 250px; overflow: hidden; flex-shrink: 0; align-items: flex-start; justify-content: center; }
 
   /* =====================================================================
-     ★ 刷新：アクティブプレイヤーを「ドッグタグ風」に変更し、展開可能に
+     ★ 刷新：アクティブプレイヤーをさらにスタイリッシュな近未来グラス調HUDに
      ===================================================================== */
   .player-tag { 
-    background: linear-gradient(135deg, #bdc3c7 0%, #7f8c8d 100%); 
-    border: 1px solid #95a5a6; 
-    padding: 12px 25px 12px 35px; 
-    border-radius: 6px; 
+    background: rgba(10, 15, 20, 0.85); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    border-left: 4px solid #7f8fa6;
+    padding: 15px 25px; 
+    border-radius: 8px; 
     font-size: clamp(20px, 2.5vw, 36px); 
-    color: #2c3e50; 
+    color: #f1f2f6; 
     display: flex; 
     flex-direction: column;
     align-items: flex-start; 
     gap: 0; 
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.8), inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 3px rgba(0,0,0,0.3); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5); 
     font-weight: bold; 
     letter-spacing: 2px; 
-    transition: all 0.3s ease; 
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
     position: relative; 
     cursor: pointer;
-    text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
-    min-width: clamp(200px, 20vw, 300px);
+    min-width: clamp(220px, 22vw, 320px);
+    overflow: hidden;
   }
   
-  .player-tag::before { 
-    content: ''; 
-    position: absolute; 
-    left: 12px; 
-    top: 20px; 
-    width: clamp(10px, 1.2vw, 14px); 
-    height: clamp(10px, 1.2vw, 14px); 
-    background: #111; 
-    border-radius: 50%; 
-    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.9), 1px 1px 1px rgba(255,255,255,0.6); 
+  /* キラッと光る反射エフェクト */
+  .player-tag::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: all 0.5s ease;
   }
   
   .player-tag:hover { 
-    transform: translateY(-2px); 
-    background: linear-gradient(135deg, #ecf0f1 0%, #95a5a6 100%); 
-    box-shadow: 4px 4px 15px rgba(0,0,0,0.9), inset 1px 1px 3px rgba(255,255,255,0.8); 
+    transform: translateY(-4px); 
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 20px rgba(127, 140, 141, 0.3); 
+  }
+  .player-tag:hover::after {
+    left: 200%;
   }
 
   .tag-header { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 
-  /* VIPタグのドッグタグ化 */
+  /* VIPタグのスタイリッシュ発光化 */
   .vip-tag-1 { 
-    background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%) !important; 
-    border: 1px solid #e67e22 !important;
-    color: #fff !important;
-    text-shadow: 1px 1px 0px rgba(0,0,0,0.3) !important;
+    border-left: 4px solid #f1c40f !important;
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.1) 0%, rgba(10, 15, 20, 0.9) 100%) !important; 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 15px rgba(241, 196, 15, 0.2) !important;
   }
-  .vip-tag-1 .player-stats { border-top-color: rgba(255,255,255,0.4); color: #fff; }
-  .vip-tag-1 .stat-label { color: #ffeaa7; }
-  .vip-tag-1 .stat-val { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
-  .vip-tag-1 .stat-val.plus { color: #55efc4; text-shadow: 0 0 5px rgba(85,239,196,0.5); }
+  .vip-tag-1:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 25px rgba(241, 196, 15, 0.5) !important; }
+  .vip-tag-1 .tag-name { color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
 
-  .vip-tag-2 { background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%) !important; }
+  .vip-tag-2 { 
+    border-left: 4px solid #bdc3c7 !important;
+    background: linear-gradient(135deg, rgba(189, 195, 199, 0.1) 0%, rgba(10, 15, 20, 0.9) 100%) !important; 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 15px rgba(189, 195, 199, 0.2) !important;
+  }
+  .vip-tag-2:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 25px rgba(189, 195, 199, 0.5) !important; }
+  .vip-tag-2 .tag-name { color: #bdc3c7; text-shadow: 0 0 10px rgba(189, 195, 199, 0.5); }
 
   .vip-tag-3 { 
-    background: linear-gradient(135deg, #e67e22 0%, #c0392b 100%) !important; 
-    border: 1px solid #c0392b !important;
-    color: #fff !important;
-    text-shadow: 1px 1px 0px rgba(0,0,0,0.3) !important;
+    border-left: 4px solid #cd7f32 !important;
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.1) 0%, rgba(10, 15, 20, 0.9) 100%) !important; 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 15px rgba(205, 127, 50, 0.2) !important;
   }
-  .vip-tag-3 .player-stats { border-top-color: rgba(255,255,255,0.4); color: #fff; }
-  .vip-tag-3 .stat-label { color: #f5b041; }
-  .vip-tag-3 .stat-val { color: #fff; }
-  .vip-tag-3 .stat-val.plus { color: #55efc4; }
+  .vip-tag-3:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.8), 0 0 25px rgba(205, 127, 50, 0.5) !important; }
+  .vip-tag-3 .tag-name { color: #cd7f32; text-shadow: 0 0 10px rgba(205, 127, 50, 0.5); }
 
-  /* タップで展開される戦績エリア */
+  /* タップで展開される戦績エリア (HUD風グリッド) */
   .player-stats {
     display: none;
     width: 100%;
-    margin-top: 8px;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(44, 62, 80, 0.4);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-family: 'Courier New', monospace;
-    font-size: clamp(14px, 1.5vw, 20px);
-    color: #2c3e50;
-    text-shadow: none;
+    font-size: clamp(13px, 1.4vw, 18px);
+    color: #a4b0be;
     text-align: left;
     letter-spacing: 1px;
-    font-weight: bold;
+    font-weight: normal;
   }
-  .player-tag.open .player-stats { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .player-tag.open .player-stats { display: block; animation: expandStats 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+  @keyframes expandStats { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .stat-label { color: #34495e; font-weight: bold; }
-  .stat-val { color: #c0392b; font-weight: 900; }
-  .stat-val.plus { color: #27ae60; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 15px;
+  }
+  .stat-item { display: flex; flex-direction: column; }
+  .stat-label { color: #7f8fa6; font-size: 0.8em; letter-spacing: 2px; margin-bottom: 2px; }
+  .stat-val { color: #ffffff; font-weight: bold; font-size: 1.1em; }
+  .stat-val.plus { color: #2ed573; text-shadow: 0 0 8px rgba(46, 213, 115, 0.4); }
+  .stat-val.minus { color: #ff4757; text-shadow: 0 0 8px rgba(255, 71, 87, 0.4); }
   
   .crown-icon { width: clamp(20px, 2.5vw, 32px); height: clamp(20px, 2.5vw, 32px); margin-left: 8px; margin-top: -2px; z-index: 1; }
 
@@ -340,7 +350,6 @@
     let latestData = []; 
     let top3Players = {};
     
-    // ★ 刷新：GASから取得した全履歴データを保持する変数
     let globalHofData = [];
 
     function formatNumber(num) {
@@ -351,7 +360,7 @@
       .then(res => res.json())
       .then(players => {
         if (players && players.length > 0) {
-          globalHofData = players; // データを保存
+          globalHofData = players; 
           if(players[0]) top3Players[players[0].name] = 1;
           if(players[1]) top3Players[players[1].name] = 2;
           if(players[2]) top3Players[players[2].name] = 3;
@@ -430,9 +439,9 @@
           const availableHeight = rankContainer.clientHeight;
           const contentHeight = wrapper.scrollHeight;
           if (contentHeight > availableHeight && availableHeight > 0) {
-            const scale = (availableHeight / contentHeight) * 0.98;
+            const scale = (availableHeight / contentHeight) * 0.98; 
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.width = `${100 / scale}%`;
+            wrapper.style.width = `${100 / scale}%`; 
           }
         }
       }
@@ -448,7 +457,7 @@
           if (contentHeight > availableHeight && availableHeight > 0) {
             const scale = (availableHeight / contentHeight) * 0.98;
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.width = `${100 / scale}%`;
+            wrapper.style.width = `${100 / scale}%`; 
           }
         }
       }
@@ -529,7 +538,6 @@
               tagClass += ' vip-tag-3';
           }
 
-          // ★ 刷新：戦績データの取得と展開メニューの追加
           let pData = globalHofData.find(h => h.name === p.name);
           let rank = "-";
           let games = 0;
@@ -544,8 +552,13 @@
           }
 
           let payStr = formatNumber(pay);
-          let payClass = pay > 0 ? "stat-val plus" : "stat-val";
-          if(pay > 0) payStr = "+" + payStr;
+          let payClass = "stat-val";
+          if(pay > 0) {
+            payClass = "stat-val plus";
+            payStr = "+" + payStr;
+          } else if (pay < 0) {
+            payClass = "stat-val minus";
+          }
 
           playersHtml += `
             <div class="${tagClass}" onclick="this.classList.toggle('open'); setTimeout(applyAutoScale, 50);">
@@ -554,10 +567,12 @@
                 ${crownSvg}
               </div>
               <div class="player-stats">
-                <div class="stat-row"><span class="stat-label">RANK</span><span class="stat-val">${rank}位</span></div>
-                <div class="stat-row"><span class="stat-label">GAMES</span><span class="stat-val">${games}</span></div>
-                <div class="stat-row"><span class="stat-label">PAY</span><span class="${payClass}">${payStr}</span></div>
-                <div class="stat-row"><span class="stat-label">TIME</span><span class="stat-val">${playTime}</span></div>
+                <div class="stats-grid">
+                  <div class="stat-item"><span class="stat-label">RANK</span><span class="stat-val">${rank}位</span></div>
+                  <div class="stat-item"><span class="stat-label">GAMES</span><span class="stat-val">${games}</span></div>
+                  <div class="stat-item"><span class="stat-label">PAY</span><span class="${payClass}">${payStr}</span></div>
+                  <div class="stat-item"><span class="stat-label">TIME</span><span class="stat-val">${playTime}</span></div>
+                </div>
               </div>
             </div>
           `;
