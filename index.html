@@ -13,15 +13,12 @@
   html, body { max-width: 100vw; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
   body { background: radial-gradient(circle at center, #1a5c38 0%, #0a2e1c 100%); color: #ffffff; text-align: center; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 15px; font-family: 'KEYpro', sans-serif; }
   
-  /* ★ 余白を削り、幅も高さも限界まで拡大 */
   .dashboard-container { display: flex; flex-direction: column; width: 98vw; max-width: 2000px; height: 96vh; min-height: 600px; background-color: rgba(10, 0, 0, 0.85); border-radius: 12px; border: 2px solid #d4af37; box-shadow: 0 15px 50px rgba(0,0,0,0.9); overflow: hidden; position: relative; }
   .dashboard-main { display: flex; flex-direction: row; flex: 1; overflow: hidden; }
 
-  /* ★ カラムの余白（padding）を大幅にカットしてスペースを確保 */
   .left-col { flex: 1; padding: 20px 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid rgba(127, 140, 141, 0.3); background: rgba(0,0,0,0.4); position: relative; }
   .right-col { flex: 1.5; padding: 20px 30px; display: flex; flex-direction: column; overflow: hidden; background: rgba(15, 0, 0, 0.6); gap: 15px; }
 
-  /* ★ 文字サイズを限界まで巨大化（clamp関数の数値を大幅アップ） */
   .suits { font-size: clamp(32px, 4vw, 60px); letter-spacing: 12px; margin-bottom: 5px; opacity: 0.9; margin-right: -12px; }
   .suit-red { color: #ff4757; }
   .suit-black { color: #ffffff; }
@@ -39,11 +36,9 @@
   .board-title { color: #d4af37; font-size: clamp(28px, 3.5vw, 48px); letter-spacing: 4px; font-weight: bold; text-align: left; border-bottom: 2px solid rgba(212, 175, 55, 0.4); padding-bottom: 12px; text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-shrink: 0; }
   .board-title::before { content: ''; display: inline-block; width: 8px; height: 32px; background-color: #d4af37; box-shadow: 0 0 12px #d4af37; }
   
-  .live-ranking-list { display: flex; flex-direction: column; gap: 10px; width: 100%; flex-grow: 1; overflow-y: auto; padding-right: 15px; margin-bottom: 10px; position: relative; }
-  .live-ranking-list::-webkit-scrollbar { width: 6px; }
-  .live-ranking-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-  .live-ranking-list::-webkit-scrollbar-thumb { background: #800000; border-radius: 4px; }
-
+  /* ★ スクロールを完全に禁止し、自動縮小に備えて overflow: hidden に変更 */
+  .live-ranking-list { display: flex; flex-direction: column; width: 100%; flex-grow: 1; overflow: hidden; margin-bottom: 10px; position: relative; }
+  
   .title-re-entry { font-family: 'Nosifer', sans-serif; color: #ff4757; -webkit-text-stroke: 1.5px #800000; letter-spacing: 2px; border-bottom-color: rgba(179, 0, 0, 0.5); animation: flameTitle 4s ease-in-out infinite alternate; }
   .title-re-entry::before { background-color: #ff4757; box-shadow: 0 0 15px #ff4757; }
   .title-re-entry .title-skull { width: clamp(32px, 3.5vw, 46px); height: clamp(32px, 3.5vw, 46px); fill: #ff4757; margin-left: 15px; filter: drop-shadow(0 0 8px #ff0000); }
@@ -60,12 +55,11 @@
   .name-col { flex-grow: 1; text-align: left; padding-left: 15px; display: flex; flex-direction: column; gap: 6px; justify-content: center; z-index: 1; overflow: hidden; }
   .entry-col { width: clamp(110px, 13vw, 180px); display: flex; align-items: center; justify-content: flex-end; z-index: 1; flex-shrink: 0; text-align: right; }
   
-  .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: clamp(40px, 4.5vw, 65px); font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #800000; letter-spacing: 2px; line-height: 1; animation: flameRank 4s ease-in-out infinite alternate; }
-  .worst-1 .rank-badge-text { font-size: clamp(48px, 5.5vw, 85px); -webkit-text-stroke-color: #800000; filter: drop-shadow(0 0 12px #ff4500); }
+  .rank-badge-text { font-family: 'Nosifer', sans-serif; font-size: clamp(34px, 3.5vw, 50px); font-weight: normal; color: transparent; -webkit-text-stroke: 1.5px #800000; letter-spacing: 2px; line-height: 1; animation: flameRank 4s ease-in-out infinite alternate; }
+  .worst-1 .rank-badge-text { font-size: clamp(40px, 4.5vw, 65px); -webkit-text-stroke-color: #800000; filter: drop-shadow(0 0 12px #ff4500); }
   .worst-2 .rank-badge-text { -webkit-text-stroke-color: #bf9b30; filter: drop-shadow(0 0 8px rgba(191, 155, 48, 0.5)); animation: none; }
   .worst-3 .rank-badge-text { -webkit-text-stroke-color: #a67c00; filter: drop-shadow(0 0 6px rgba(166, 124, 0, 0.4)); animation: none; }
 
-  /* ★ プレイヤー名のサイズを最大まで引き上げ！ */
   .player-name-item { font-size: clamp(24px, 3vw, 46px); font-weight: bold; color: #f1f2f6; letter-spacing: 3px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .worst-1 .player-name-item { font-size: clamp(30px, 3.8vw, 56px); color: #ffffff; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 0 15px #ff4500; animation: flameName 3s ease-in-out infinite alternate; }
 
@@ -87,12 +81,9 @@
   .title-active { color: #d4af37; border-bottom-color: rgba(212, 175, 55, 0.4); text-shadow: 0 0 10px rgba(212, 175, 55, 0.4); margin-top: auto; }
   .title-active::before { background-color: #d4af37; box-shadow: 0 0 10px #d4af37; }
 
-  .active-players-grid { display: flex; flex-wrap: wrap; gap: 15px; align-content: flex-start; max-height: 200px; overflow-y: auto; padding-right: 10px; flex-shrink: 0; }
-  .active-players-grid::-webkit-scrollbar { width: 6px; }
-  .active-players-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-  .active-players-grid::-webkit-scrollbar-thumb { background: #57606f; border-radius: 4px; }
+  /* ★ アクティブプレイヤーも自動縮小に対応するためスクロール禁止 */
+  .active-players-grid { display: flex; width: 100%; max-height: 200px; overflow: hidden; flex-shrink: 0; align-items: flex-start; justify-content: center; }
 
-  /* ★ アクティブプレイヤーのタグも大きく！ */
   .player-tag { background: rgba(0, 0, 0, 0.6); border: 1px solid #2f3542; padding: 12px 30px; border-radius: 50px; font-size: clamp(20px, 2.5vw, 36px); color: #f1f2f6; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: bold; letter-spacing: 2px; transition: all 0.3s; }
   .player-tag .status-dot { width: clamp(10px, 1.2vw, 16px); height: clamp(10px, 1.2vw, 16px); background: #d4af37; border-radius: 50%; box-shadow: 0 0 8px #d4af37; animation: blink 4s infinite; }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
@@ -113,28 +104,8 @@
   .secret-btn { position: fixed; top: 15px; left: 15px; background: transparent; color: #57606f; border: none; font-size: 32px; cursor: pointer; padding: 10px; transition: color 0.3s; outline: none; z-index: 100; }
   .secret-btn:hover { color: #ffffff; }
 
-  .nav-buttons {
-    position: absolute;
-    bottom: 25px; 
-    right: 25px; 
-    display: flex;
-    gap: 25px;
-    z-index: 50;
-  }
-  
-  .discreet-btn {
-    background: rgba(0, 0, 0, 0.6);
-    color: #7f8fa6;
-    border: 1px solid rgba(127, 140, 141, 0.5);
-    padding: 10px 25px; 
-    font-size: clamp(12px, 1.2vw, 16px);
-    border-radius: 50px;
-    text-decoration: none;
-    letter-spacing: 2px;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-align: center; 
-  }
+  .nav-buttons { position: absolute; bottom: 25px; right: 25px; display: flex; gap: 25px; z-index: 50; }
+  .discreet-btn { background: rgba(0, 0, 0, 0.6); color: #7f8fa6; border: 1px solid rgba(127, 140, 141, 0.5); padding: 10px 25px; font-size: clamp(12px, 1.2vw, 16px); border-radius: 50px; text-decoration: none; letter-spacing: 2px; transition: all 0.3s ease; font-weight: bold; text-align: center; }
   .discreet-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
 
   .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -174,7 +145,9 @@
     .board-title::before { display: none; }
     .title-re-entry { letter-spacing: 1px; font-size: 16px; }
     .title-re-entry .title-skull { display: none; }
-    .live-ranking-list { height: auto; padding-right: 0; }
+    
+    /* スマホも自動縮小に備えて overflow を修正 */
+    .live-ranking-list { height: auto; padding-right: 0; overflow: hidden; }
     .live-rank-card { padding: 10px 15px; border-radius: 0 4px 4px 0; border-left-width: 3px; }
     .live-rank-card .card-skull-bg { width: 90px; height: 90px; }
     .rank-col { width: 55px; flex-shrink: 0; }
@@ -187,7 +160,7 @@
     .entry-badge .num { font-size: 24px; }
     .entry-badge .unit { font-size: 10px; }
     .title-active { margin-top: 10px; }
-    .active-players-grid { justify-content: center; max-height: none; }
+    .active-players-grid { justify-content: center; max-height: none; overflow: hidden; }
     
     .nav-buttons { position: static; justify-content: center; margin-top: 15px; margin-bottom: 20px; gap: 10px; }
     .discreet-btn { padding: 10px 15px; font-size: 11px; }
@@ -222,12 +195,10 @@
           <svg class="title-skull" viewBox="0 0 448 512"><path d="M439.2 236.1l-20.1-11.9c-6.4-3.8-14.6-1.6-18.4 5.1-18.9 34.6-56.3 58.7-99.1 58.7-42.8 0-80.1-24.1-99.1-58.7-3.8-6.7-12-8.9-18.4-5.1l-20.1 11.9c-6.7 4-8.9 12.6-5 19.3C181.8 290.4 200.7 320 224 320s42.2-29.6 66.8-64.7c3.9-6.7 1.7-15.3-5-19.3zm-111.2-120c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zm64 0c0-13.3-10.7-24-24-24s-24 10.7-24 24 10.7 24 24 24 24-10.7 24-24zM224 0C100.3 0 0 100.3 0 224v192c0 53 43 96 96 96h256c53 0 96-43 96-96V224C448 100.3 347.7 0 224 0zm96 416c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm-128 0c0 17.7-14.3 32-32 32s-32-14.3-32-32 14.3-32 32-32 32 14.3 32 32zm160-224C352 110.3 294.5 48 224 48s-128 62.3-128 144v14.1c0 23.6 15.1 44.8 36.9 52.8l10.8 4c16.3 6 30.1 16.6 39.4 30.2 11.2-16.1 27.6-29 46.9-36l10.8-4c21.8-8 36.9-29.2 36.9-52.8V192zm-32 96c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-128 0c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32z"/></svg>
         </div>
         <div id="topLiveBoard" class="live-ranking-list">
-          <div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>
         </div>
 
         <div class="board-title title-active">ACTIVE PLAYERS</div>
         <div id="activePlayersBoard" class="active-players-grid">
-          <div class="empty-text">現在プレイ中の参加者はいません</div>
         </div>
       </div>
     </div>
@@ -348,6 +319,49 @@
       setTimeout(() => { container.style.opacity = '0'; container.style.transition = 'opacity 1s ease'; setTimeout(() => container.remove(), 1000); }, 5000);
     }
 
+    // ★ オートスケール（自動縮小）関数
+    function applyAutoScale() {
+      // 1. リエントリーランキング (縦並び)
+      const rankContainer = document.getElementById('topLiveBoard');
+      if (rankContainer) {
+        const wrapper = rankContainer.querySelector('.scale-wrapper');
+        if (wrapper) {
+          wrapper.style.transform = 'scale(1)';
+          wrapper.style.width = '100%';
+          
+          const availableHeight = rankContainer.clientHeight;
+          const contentHeight = wrapper.scrollHeight;
+          
+          if (contentHeight > availableHeight && availableHeight > 0) {
+            const scale = (availableHeight / contentHeight) * 0.98; // 2%の余裕を持たせて縮小
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.width = `${100 / scale}%`; // 横幅を維持
+          }
+        }
+      }
+
+      // 2. アクティブプレイヤー (折り返し)
+      const activeContainer = document.getElementById('activePlayersBoard');
+      if (activeContainer) {
+        const wrapper = activeContainer.querySelector('.scale-wrapper');
+        if (wrapper) {
+          wrapper.style.transform = 'scale(1)';
+          
+          const availableHeight = activeContainer.clientHeight;
+          const contentHeight = wrapper.scrollHeight;
+          
+          if (contentHeight > availableHeight && availableHeight > 0) {
+            const scale = (availableHeight / contentHeight) * 0.98;
+            wrapper.style.transform = `scale(${scale})`;
+            // 折り返しの場合は幅をいじらない
+          }
+        }
+      }
+    }
+
+    // ウィンドウサイズが変わった時にも再計算
+    window.addEventListener('resize', applyAutoScale);
+
     function renderBoard(data) {
       const playersBoard = document.getElementById('activePlayersBoard');
       const rankingBoard = document.getElementById('topLiveBoard');
@@ -364,13 +378,9 @@
         }
       });
 
-      if (reEntryPlayers.length === 0) {
-        const emptyHtml = '<div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>';
-        if (rankingBoard.dataset.state !== emptyHtml) {
-          rankingBoard.innerHTML = emptyHtml;
-          rankingBoard.dataset.state = emptyHtml;
-        }
-      } else {
+      // リエントリーランキングの生成
+      let html = '';
+      if (reEntryPlayers.length > 0) {
         let groups = {};
         reEntryPlayers.forEach(p => {
           let key = p.reEntry; 
@@ -381,7 +391,6 @@
         let groupArray = Object.values(groups);
         groupArray.sort((a, b) => b.reEntry - a.reEntry);
 
-        let html = '';
         groupArray.forEach((group, index) => {
           let rankStr = String(index + 1).padStart(2, '0');
           let rankClass = "worst-other";
@@ -401,20 +410,20 @@
             </div>
           `;
         });
-        if (rankingBoard.dataset.state !== html) {
-          rankingBoard.innerHTML = html;
-          rankingBoard.dataset.state = html;
-        }
+      }
+      
+      // ★ 縮小用ラッパーで囲む
+      let pureRankHtml = html || '<div class="empty-text">現在リエントリー中のプレイヤーはいません<br><span>🕊 ALL PLAYERS SURVIVING</span></div>';
+      let wrappedRankHtml = `<div class="scale-wrapper" style="width: 100%; display: flex; flex-direction: column; gap: 12px; transform-origin: top left; transition: transform 0.3s ease;">${pureRankHtml}</div>`;
+      
+      if (rankingBoard.dataset.state !== pureRankHtml) {
+        rankingBoard.innerHTML = wrappedRankHtml;
+        rankingBoard.dataset.state = pureRankHtml;
       }
 
-      if (activePlayers.length === 0) {
-        const emptyHtml = '<div class="empty-text">現在プレイ中の参加者はいません</div>';
-        if (playersBoard.dataset.state !== emptyHtml) {
-          playersBoard.innerHTML = emptyHtml;
-          playersBoard.dataset.state = emptyHtml;
-        }
-      } else {
-        let playersHtml = '';
+      // アクティブプレイヤーの生成
+      let playersHtml = '';
+      if (activePlayers.length > 0) {
         activePlayers.forEach(p => {
           let crownSvg = '';
           let tagClass = 'player-tag';
@@ -437,11 +446,19 @@
             </div>
           `;
         });
-        if (playersBoard.dataset.state !== playersHtml) {
-          playersBoard.innerHTML = playersHtml;
-          playersBoard.dataset.state = playersHtml;
-        }
       }
+
+      // ★ 縮小用ラッパーで囲む
+      let purePlayersHtml = playersHtml || '<div class="empty-text">現在プレイ中の参加者はいません</div>';
+      let wrappedPlayersHtml = `<div class="scale-wrapper" style="width: 100%; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; transform-origin: top center; transition: transform 0.3s ease;">${purePlayersHtml}</div>`;
+      
+      if (playersBoard.dataset.state !== purePlayersHtml) {
+        playersBoard.innerHTML = wrappedPlayersHtml;
+        playersBoard.dataset.state = purePlayersHtml;
+      }
+
+      // DOM更新後にオートスケールを実行
+      setTimeout(applyAutoScale, 50);
     }
 
     let currentTimerState = { running: false, elapsedSeconds: 0, lastUpdate: Date.now() };
