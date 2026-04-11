@@ -84,82 +84,103 @@
   .active-players-grid { display: flex; width: 100%; max-height: 250px; overflow: hidden; flex-shrink: 0; align-items: flex-start; justify-content: center; }
 
   /* =====================================================================
-     ★ 新設：アクティブプレイヤーのタグをメカニカルなネームプレート風に
+     ★ 刷新：アクティブプレイヤーを「ドッグタグ風」に変更し、展開可能に
      ===================================================================== */
   .player-tag { 
-    background: linear-gradient(135deg, rgba(30, 35, 40, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%); 
-    border: 1px solid rgba(127, 140, 141, 0.4); 
-    border-right: 2px solid rgba(212, 175, 55, 0.6); 
-    border-bottom: 2px solid rgba(212, 175, 55, 0.6); 
-    padding: 12px 30px 12px 25px; 
-    border-radius: 4px 15px 4px 15px; 
+    background: linear-gradient(135deg, #bdc3c7 0%, #7f8c8d 100%); 
+    border: 1px solid #95a5a6; 
+    padding: 12px 25px 12px 35px; 
+    border-radius: 6px; 
     font-size: clamp(20px, 2.5vw, 36px); 
-    color: #ffffff; 
+    color: #2c3e50; 
     display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    box-shadow: 4px 4px 15px rgba(0,0,0,0.8); 
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 0; 
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.8), inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 3px rgba(0,0,0,0.3); 
     font-weight: bold; 
-    letter-spacing: 3px; 
+    letter-spacing: 2px; 
     transition: all 0.3s ease; 
     position: relative; 
-    overflow: hidden; 
+    cursor: pointer;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
+    min-width: clamp(200px, 20vw, 300px);
   }
   
   .player-tag::before { 
     content: ''; 
     position: absolute; 
-    left: 0; 
-    top: 0; 
-    width: 6px; 
-    height: 100%; 
-    background: #d4af37; 
-    box-shadow: 0 0 15px #d4af37; 
-    animation: slowGlow 4s ease-in-out infinite alternate; 
+    left: 12px; 
+    top: 20px; 
+    width: clamp(10px, 1.2vw, 14px); 
+    height: clamp(10px, 1.2vw, 14px); 
+    background: #111; 
+    border-radius: 50%; 
+    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.9), 1px 1px 1px rgba(255,255,255,0.6); 
   }
   
   .player-tag:hover { 
-    transform: translateY(-3px) scale(1.02); 
-    border-color: #d4af37; 
-    background: linear-gradient(135deg, rgba(40, 45, 50, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%); 
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3); 
+    transform: translateY(-2px); 
+    background: linear-gradient(135deg, #ecf0f1 0%, #95a5a6 100%); 
+    box-shadow: 4px 4px 15px rgba(0,0,0,0.9), inset 1px 1px 3px rgba(255,255,255,0.8); 
   }
-  
-  .player-tag .status-dot { display: none; }
-  
-  @keyframes slowGlow { 0% { opacity: 0.5; box-shadow: 0 0 5px #d4af37; } 100% { opacity: 1; box-shadow: 0 0 20px #d4af37; } }
 
-  .crown-icon { width: clamp(24px, 2.5vw, 36px); height: clamp(24px, 2.5vw, 36px); margin-left: 8px; margin-top: -2px; z-index: 1; }
-  .crown-gold { fill: #f1c40f; filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.8)); animation: goldGlow 4s infinite alternate; }
-  .crown-silver { fill: #bdc3c7; filter: drop-shadow(0 0 8px rgba(189, 195, 199, 0.8)); }
-  .crown-bronze { fill: #cd7f32; filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.8)); }
-  
-  .vip-tag-1 { border-color: rgba(241, 196, 15, 0.6) !important; border-right: 2px solid #f1c40f !important; border-bottom: 2px solid #f1c40f !important; box-shadow: 0 0 15px rgba(241, 196, 15, 0.3), inset 0 0 10px rgba(241, 196, 15, 0.1) !important; color: #f1c40f !important; }
-  .vip-tag-1::before { background: #f1c40f; box-shadow: 0 0 15px #f1c40f; animation: slowGlowGold 4s ease-in-out infinite alternate; }
-  .vip-tag-2 { border-color: rgba(189, 195, 199, 0.5) !important; border-right: 2px solid #bdc3c7 !important; border-bottom: 2px solid #bdc3c7 !important; box-shadow: 0 0 12px rgba(189, 195, 199, 0.2) !important; color: #bdc3c7 !important; }
-  .vip-tag-2::before { background: #bdc3c7; box-shadow: 0 0 15px #bdc3c7; animation: slowGlowSilver 4s ease-in-out infinite alternate; }
-  .vip-tag-3 { border-color: rgba(205, 127, 50, 0.5) !important; border-right: 2px solid #cd7f32 !important; border-bottom: 2px solid #cd7f32 !important; box-shadow: 0 0 12px rgba(205, 127, 50, 0.2) !important; color: #cd7f32 !important; }
-  .vip-tag-3::before { background: #cd7f32; box-shadow: 0 0 15px #cd7f32; animation: slowGlowBronze 4s ease-in-out infinite alternate; }
+  .tag-header { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 
-  @keyframes slowGlowGold { 0% { opacity: 0.5; box-shadow: 0 0 5px #f1c40f; } 100% { opacity: 1; box-shadow: 0 0 20px #f1c40f; } }
-  @keyframes slowGlowSilver { 0% { opacity: 0.5; box-shadow: 0 0 5px #bdc3c7; } 100% { opacity: 1; box-shadow: 0 0 20px #bdc3c7; } }
-  @keyframes slowGlowBronze { 0% { opacity: 0.5; box-shadow: 0 0 5px #cd7f32; } 100% { opacity: 1; box-shadow: 0 0 20px #cd7f32; } }
-  @keyframes goldGlow { 0% { filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.5)); } 100% { filter: drop-shadow(0 0 18px rgba(241, 196, 15, 1)); } }
+  /* VIPタグのドッグタグ化 */
+  .vip-tag-1 { 
+    background: linear-gradient(135deg, #f1c40f 0%, #d35400 100%) !important; 
+    border: 1px solid #e67e22 !important;
+    color: #fff !important;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.3) !important;
+  }
+  .vip-tag-1 .player-stats { border-top-color: rgba(255,255,255,0.4); color: #fff; }
+  .vip-tag-1 .stat-label { color: #ffeaa7; }
+  .vip-tag-1 .stat-val { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+  .vip-tag-1 .stat-val.plus { color: #55efc4; text-shadow: 0 0 5px rgba(85,239,196,0.5); }
+
+  .vip-tag-2 { background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%) !important; }
+
+  .vip-tag-3 { 
+    background: linear-gradient(135deg, #e67e22 0%, #c0392b 100%) !important; 
+    border: 1px solid #c0392b !important;
+    color: #fff !important;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.3) !important;
+  }
+  .vip-tag-3 .player-stats { border-top-color: rgba(255,255,255,0.4); color: #fff; }
+  .vip-tag-3 .stat-label { color: #f5b041; }
+  .vip-tag-3 .stat-val { color: #fff; }
+  .vip-tag-3 .stat-val.plus { color: #55efc4; }
+
+  /* タップで展開される戦績エリア */
+  .player-stats {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(44, 62, 80, 0.4);
+    font-family: 'Courier New', monospace;
+    font-size: clamp(14px, 1.5vw, 20px);
+    color: #2c3e50;
+    text-shadow: none;
+    text-align: left;
+    letter-spacing: 1px;
+    font-weight: bold;
+  }
+  .player-tag.open .player-stats { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .stat-label { color: #34495e; font-weight: bold; }
+  .stat-val { color: #c0392b; font-weight: 900; }
+  .stat-val.plus { color: #27ae60; }
+  
+  .crown-icon { width: clamp(20px, 2.5vw, 32px); height: clamp(20px, 2.5vw, 32px); margin-left: 8px; margin-top: -2px; z-index: 1; }
 
   .empty-text { color: #57606f; font-size: clamp(18px, 2vw, 26px); width: 100%; text-align: center; margin-top: 20px; letter-spacing: 2px; line-height: 1.8; font-weight: bold; }
   .empty-text span { color: #d4af37; font-weight: bold; font-size: clamp(16px, 1.8vw, 22px); }
   
-  .dashboard-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background: rgba(0, 0, 0, 0.5);
-    border-top: 1px solid rgba(127, 140, 141, 0.3);
-    flex-shrink: 0;
-    z-index: 50;
-  }
-
+  .dashboard-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(127, 140, 141, 0.3); flex-shrink: 0; z-index: 50; }
   .footer-left { flex: 1; display: flex; align-items: center; justify-content: flex-start; gap: 15px; }
   .footer-center { flex: 1; display: flex; justify-content: center; gap: 20px; }
   .footer-right { flex: 1; }
@@ -168,20 +189,7 @@
   .secret-btn:hover { color: #ffffff; }
   .footer-text { font-size: clamp(10px, 0.8vw, 14px); color: #57606f; letter-spacing: 2px; text-transform: uppercase; margin: 0; white-space: nowrap; }
 
-  .discreet-btn {
-    background: rgba(0, 0, 0, 0.6);
-    color: #7f8fa6;
-    border: 1px solid rgba(127, 140, 141, 0.5);
-    padding: 10px 25px; 
-    font-size: clamp(12px, 1.2vw, 16px);
-    border-radius: 50px;
-    text-decoration: none;
-    letter-spacing: 2px;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-  }
+  .discreet-btn { background: rgba(0, 0, 0, 0.6); color: #7f8fa6; border: 1px solid rgba(127, 140, 141, 0.5); padding: 10px 25px; font-size: clamp(12px, 1.2vw, 16px); border-radius: 50px; text-decoration: none; letter-spacing: 2px; transition: all 0.3s ease; font-weight: bold; text-align: center; white-space: nowrap; }
   .discreet-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
 
   .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -331,11 +339,19 @@
     let isFirstLoad = true;
     let latestData = []; 
     let top3Players = {};
+    
+    // ★ 刷新：GASから取得した全履歴データを保持する変数
+    let globalHofData = [];
+
+    function formatNumber(num) {
+      return Number(num).toLocaleString();
+    }
 
     fetch(GAS_URL, { redirect: 'follow' })
       .then(res => res.json())
       .then(players => {
         if (players && players.length > 0) {
+          globalHofData = players; // データを保存
           if(players[0]) top3Players[players[0].name] = 1;
           if(players[1]) top3Players[players[1].name] = 2;
           if(players[2]) top3Players[players[2].name] = 3;
@@ -414,9 +430,9 @@
           const availableHeight = rankContainer.clientHeight;
           const contentHeight = wrapper.scrollHeight;
           if (contentHeight > availableHeight && availableHeight > 0) {
-            const scale = (availableHeight / contentHeight) * 0.98; 
+            const scale = (availableHeight / contentHeight) * 0.98;
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.width = `${100 / scale}%`; 
+            wrapper.style.width = `${100 / scale}%`;
           }
         }
       }
@@ -432,7 +448,7 @@
           if (contentHeight > availableHeight && availableHeight > 0) {
             const scale = (availableHeight / contentHeight) * 0.98;
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.width = `${100 / scale}%`; 
+            wrapper.style.width = `${100 / scale}%`;
           }
         }
       }
@@ -513,10 +529,36 @@
               tagClass += ' vip-tag-3';
           }
 
+          // ★ 刷新：戦績データの取得と展開メニューの追加
+          let pData = globalHofData.find(h => h.name === p.name);
+          let rank = "-";
+          let games = 0;
+          let pay = 0;
+          let playTime = "N/A";
+
+          if (pData) {
+            rank = globalHofData.indexOf(pData) + 1;
+            games = pData.games || 0;
+            pay = pData.pay || 0;
+            playTime = pData.playTime || "N/A"; 
+          }
+
+          let payStr = formatNumber(pay);
+          let payClass = pay > 0 ? "stat-val plus" : "stat-val";
+          if(pay > 0) payStr = "+" + payStr;
+
           playersHtml += `
-            <div class="${tagClass}">
-              <span class="tag-name">${p.name}</span>
-              ${crownSvg}
+            <div class="${tagClass}" onclick="this.classList.toggle('open'); setTimeout(applyAutoScale, 50);">
+              <div class="tag-header">
+                <span class="tag-name">${p.name}</span>
+                ${crownSvg}
+              </div>
+              <div class="player-stats">
+                <div class="stat-row"><span class="stat-label">RANK</span><span class="stat-val">${rank}位</span></div>
+                <div class="stat-row"><span class="stat-label">GAMES</span><span class="stat-val">${games}</span></div>
+                <div class="stat-row"><span class="stat-label">PAY</span><span class="${payClass}">${payStr}</span></div>
+                <div class="stat-row"><span class="stat-label">TIME</span><span class="stat-val">${playTime}</span></div>
+              </div>
             </div>
           `;
         });
