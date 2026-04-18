@@ -202,13 +202,13 @@
   .empty-text span { color: #d4af37; font-weight: bold; font-size: clamp(16px, 1.8vw, 22px); }
   
   /* =====================================================================
-     ★ 元のレイアウト構造を復元（フッター要素撤去・絶対配置に戻す）
+     ★ PC時は非表示にするよう変更 (ご指示箇所のみ変更)
      ===================================================================== */
   .nav-buttons {
     position: absolute;
     bottom: 25px; 
     right: 25px; 
-    display: flex;
+    display: none; /* ★PC時は非表示 */
     gap: 15px;
     z-index: 50;
   }
@@ -265,8 +265,8 @@
     .title-active { margin-top: 10px; }
     .active-players-grid { justify-content: center; max-height: none; overflow: hidden; }
     
-    /* ★ スマホ時はボタン類を下部に配置する設定を維持 */
-    .nav-buttons { position: static; justify-content: center; margin-top: 15px; margin-bottom: 10px; gap: 10px; width: 100%; }
+    /* ★ スマホ時は表示するよう変更 (ご指示箇所のみ変更) */
+    .nav-buttons { display: flex; position: static; justify-content: center; margin-top: 15px; margin-bottom: 10px; gap: 10px; width: 100%; }
     .discreet-btn { padding: 10px 15px; font-size: 11px; }
     .secret-btn { position: static; display: block; margin: 10px auto 0; font-size: 28px; padding: 5px; text-align: center; width: 100%; }
     .footer-text { position: static; text-align: center; margin-top: 10px; padding-bottom: 20px; display: block; width: 100%; }
